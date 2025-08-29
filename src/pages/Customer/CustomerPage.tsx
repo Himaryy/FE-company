@@ -1,0 +1,63 @@
+import PaginationBar from "@/components/PaginationBar";
+import TableCustomer from "@/components/TableCustomer";
+import { buttonVariants } from "@/components/ui/button";
+import { UseAppContext } from "@/context/UseAppContext";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+
+const CustomerPage = () => {
+  const { customers } = UseAppContext();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  const totalItems = customers.length;
+
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  const paginatedCustomer = customers.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const handlePagination = (page: number) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+  };
+
+  return (
+    <>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold">Customer</h1>
+        <Link to="/customer/create" className={buttonVariants()}>
+          Add Customer
+        </Link>
+      </div>
+
+      {/* <Card> */}
+      {/* <CardHeader> */}
+      <h1>Here you will see all the customer</h1>
+      {/* </CardHeader> */}
+
+      {/* <CardContent> */}
+      <div className="">
+        <TableCustomer
+          paginatedData={paginatedCustomer}
+          currentPage={currentPage}
+          itemsPerPage={itemsPerPage}
+        />
+      </div>
+
+      <div className="">
+        <PaginationBar
+          total={totalPages}
+          onPageChange={handlePagination}
+          page={currentPage}
+        />
+      </div>
+      {/* </CardContent> */}
+      {/* </Card> */}
+    </>
+  );
+};
+
+export default CustomerPage;
