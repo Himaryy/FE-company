@@ -7,9 +7,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { UseAppContext } from "@/context/UseAppContext";
 
 // Dropdown edit delete
-export const RowActions = () => {
+export const RowActions = ({ customerCode }: { customerCode: string }) => {
+  const { navigate } = UseAppContext();
+
+  const handleEdit = () => {
+    navigate(`/customer/edit-customer/${customerCode}`);
+    console.log("customerCode", customerCode);
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -23,7 +30,7 @@ export const RowActions = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-32">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem variant="destructive">Delete</DropdownMenuItem>
       </DropdownMenuContent>

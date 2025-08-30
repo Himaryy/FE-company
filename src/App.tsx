@@ -7,6 +7,7 @@ import Layout from "./pages/Dashboard/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CustomerPage from "./pages/Customer/CustomerPage";
 import AddCustomer from "./pages/Customer/ActionPage/AddCustomer";
+import EditCustomer from "./pages/Customer/ActionPage/EditCustomer";
 
 function App() {
   return (
@@ -21,7 +22,11 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route path="/" element={<Dashboard />} />
             <Route path="/customer" element={<CustomerPage />} />
-            <Route path="/customer/create" element={<AddCustomer />} />
+            <Route path="/customer/add-customer" element={<AddCustomer />} />
+            <Route
+              path="/customer/edit-customer/:code"
+              element={<EditCustomer />}
+            />
           </Route>
         </Routes>
       </div>

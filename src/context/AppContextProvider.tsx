@@ -3,7 +3,14 @@ import { AppContext } from "./AppContext";
 import { useState, type ReactNode } from "react";
 import { getUser, SignIn, signOutUser } from "@/lib/authService";
 import { useNavigate } from "react-router-dom";
-import { getAllCustomer } from "@/lib/customerService";
+import {
+  addCustomer,
+  editCustomer,
+  getAllCustomer,
+  getCustomer,
+  getDetailsCustomer,
+} from "@/lib/customerService";
+import type { CustomerFormValues } from "@/lib/zodSchemas";
 
 interface Props {
   children: ReactNode;
@@ -19,29 +26,31 @@ interface Customer {
   name: string;
   type: string;
   companyType: string;
-  area: string;
-  province: string;
-  city: string;
-  address: string;
-  group: {
+  areaCode: string;
+  province: {
     code: string;
     name: string;
   };
-  status: string;
-  target: string;
-  achievement: string;
-  percentage: string;
+  city: {
+    code: string;
+    name: string;
+  };
+  subdistrict: string;
+  address: string;
 }
 
 export const AppContextProvider = ({ children }: Props) => {
   const [user, setUser] = useState(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null);
+  const [customerByCode, setCustomerByCode] = useState<Customer | null>(null);
 
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("accessToken")
   );
 
   const navigate = useNavigate();
+  const resetDetailCustomer = () => setDetailCustomer(null);
 
   // Login
   const signIn = async ({ phone, password }: FormDataLogin) => {
@@ -49,6 +58,8 @@ export const AppContextProvider = ({ children }: Props) => {
       const data = await SignIn({ phone, password });
 
       localStorage.setItem("accessToken", data.accessToken);
+
+      navigate("/");
 
       await fetchUserData();
     } catch (error) {
@@ -60,8 +71,9 @@ export const AppContextProvider = ({ children }: Props) => {
   const signOut = async () => {
     try {
       const accToken = localStorage.getItem("accessToken");
-
-      if (!accToken) throw new Error("Token not found");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
 
       await signOutUser(accToken);
       localStorage.removeItem("user");
@@ -81,8 +93,9 @@ export const AppContextProvider = ({ children }: Props) => {
   const fetchUserData = async () => {
     try {
       const accToken = localStorage.getItem("accessToken");
-
-      if (!accToken) throw new Error("Token not found");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
 
       const data = await getUser(accToken);
       setUser(data);
@@ -95,18 +108,94 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
+  // Add Customer
+  const addDataCustomer = async (values: CustomerFormValues) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await addCustomer(accToken, values);
+
+      if (data.success) {
+        await fetchAllCustomer();
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Failed to add customer:", error);
+      throw error;
+    }
+  };
+
+  // Edit Customer
+  const editDataCustomer = async (values: CustomerFormValues, code: string) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await editCustomer(accToken, code, values);
+
+      // refetch
+      if (data.success) {
+        await fetchAllCustomer();
+        navigate("/customers");
+      }
+
+      return data;
+    } catch (error) {
+      console.error("Failed to edit customer:", error);
+      throw error;
+    }
+  };
+
+  // Get Details customer
+  const getDetailsDataCustomer = async (code: string) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+      const data = await getDetailsCustomer(accToken, code);
+
+      setDetailCustomer(data);
+      return data;
+    } catch (error) {
+      console.error("Failed to get customer detail:", error);
+    }
+  };
+
   // Get All Customer
   const fetchAllCustomer = async () => {
     try {
       const accToken = localStorage.getItem("accessToken");
-
-      if (!accToken) throw new Error("Token not found");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
 
       const data = await getAllCustomer(accToken);
 
       setCustomers(data);
     } catch (error) {
       console.error("Failed to get all customer:", error);
+    }
+  };
+
+  // Get Customer by Code
+  const fetchCustomerByCode = async (code: string) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+      const data = await getCustomer(accToken, code);
+
+      setCustomerByCode(data);
+    } catch (error) {
+      console.error("Failed to get customer detail:", error);
     }
   };
 
@@ -130,6 +219,13 @@ export const AppContextProvider = ({ children }: Props) => {
     signIn,
     signOut,
     customers,
+    fetchCustomerByCode,
+    detailCustomer,
+    addDataCustomer,
+    editDataCustomer,
+    getDetailsDataCustomer,
+    customerByCode,
+    resetDetailCustomer,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

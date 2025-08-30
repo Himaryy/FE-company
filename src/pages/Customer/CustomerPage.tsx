@@ -28,7 +28,7 @@ const CustomerPage = () => {
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Customer</h1>
-        <Link to="/customer/create" className={buttonVariants()}>
+        <Link to="/customer/add-customer" className={buttonVariants()}>
           Add Customer
         </Link>
       </div>

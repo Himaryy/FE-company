@@ -8,8 +8,19 @@ import {
   TableRow,
 } from "./ui/table";
 import { RowActions } from "./CustomerActions";
+import CustomerDetail from "./CustomerDetail";
+import { Drawer, DrawerTrigger } from "./ui/drawer";
+import { Button } from "./ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { UseAppContext } from "@/context/UseAppContext";
 
 const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
+  const { resetDetailCustomer, getDetailsDataCustomer } = UseAppContext();
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const isMobile = useIsMobile();
+
   return (
     <div className="overflow-hidden border rounded-2xl">
       <Table>
@@ -37,7 +48,22 @@ const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
               </TableCell>
               <TableCell>{customer?.code}</TableCell>
               <TableCell className="max-w-[256px] truncate">
-                {customer?.name}
+                <Drawer direction={isMobile ? "bottom" : "right"}>
+                  <DrawerTrigger asChild>
+                    <Button
+                      variant="link"
+                      className="text-foreground w-fit px-0 text-left cursor-pointer"
+                      onClick={async () => {
+                        resetDetailCustomer();
+                        await getDetailsDataCustomer(customer?.code);
+                        setIsOpen(true);
+                      }}
+                    >
+                      {customer?.name}
+                    </Button>
+                  </DrawerTrigger>
+                  <CustomerDetail code={customer?.code} />
+                </Drawer>
               </TableCell>
               {/* <TableCell>{customer?.companyType}</TableCell>
                     <TableCell>{customer?.type}</TableCell> */}
@@ -48,7 +74,7 @@ const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
                 {customer?.address}
               </TableCell>
               <TableCell>
-                <RowActions />
+                <RowActions customerCode={customer?.code} />
               </TableCell>
             </TableRow>
           ))}

@@ -14,27 +14,27 @@ interface TablePaginationProps {
 }
 
 const PaginationBar = ({ page, total, onPageChange }: TablePaginationProps) => {
-  const renderPageNumber = () => {
-    const pages = [];
+  // const renderPageNumber = () => {
+  //   const pages = [];
 
-    for (let i = 1; i <= total; i++) {
-      pages.push(
-        <PaginationItem key={i}>
-          <PaginationLink
-            isActive={page === i}
-            onClick={(e) => {
-              e.preventDefault();
-              onPageChange(i);
-            }}
-            className="cursor-default"
-          >
-            {i}
-          </PaginationLink>
-        </PaginationItem>
-      );
-    }
-    return pages;
-  };
+  //   for (let i = 1; i <= total; i++) {
+  //     pages.push(
+  //       <PaginationItem key={i}>
+  //         <PaginationLink
+  //           isActive={page === i}
+  //           onClick={(e) => {
+  //             e.preventDefault();
+  //             onPageChange(i);
+  //           }}
+  //           className="cursor-default"
+  //         >
+  //           {i}
+  //         </PaginationLink>
+  //       </PaginationItem>
+  //     );
+  //   }
+  //   return pages;
+  // };
 
   return (
     <Pagination className="">
@@ -50,7 +50,9 @@ const PaginationBar = ({ page, total, onPageChange }: TablePaginationProps) => {
         </PaginationItem>
 
         {/* Render angka */}
-        {renderPageNumber()}
+        <span className="mx-2 text-sm">
+          Page {page} of {total}
+        </span>
 
         <PaginationItem>
           <PaginationNext
