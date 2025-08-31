@@ -12,9 +12,9 @@ import {
   IconUserCircle,
 } from "@tabler/icons-react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/Dashboard/nav-main";
+import { NavSecondary } from "@/components/Dashboard/nav-secondary";
+import { NavUser } from "@/components/Dashboard/nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -32,7 +32,7 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/",
       icon: IconLayoutDashboard,
     },
     {
@@ -44,11 +44,6 @@ const data = {
       title: "Transaction",
       url: "/transaction",
       icon: IconTimeline,
-    },
-    {
-      title: "Summary",
-      url: "/summary",
-      icon: IconBook2,
     },
   ],
   navClouds: [
@@ -124,15 +119,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
-            >
-              <Link to="/">
-                <img src={Logo} alt="Logo" className="size-6" />
-                <span className="text-base font-semibold">Company.</span>
-              </Link>
-            </SidebarMenuButton>
+            <div className="flex gap-3 items-center">
+              <img src={Logo} alt="Logo" className="size-6" color="#fffs" />
+              <span className="text-xl font-semibold">Company.</span>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect } from "react";
 import { AppContext } from "./AppContext";
 import { useState, type ReactNode } from "react";
-import { getUser, SignIn, signOutUser } from "@/lib/authService";
+import { getUser, SignIn, signOutUser } from "@/lib/api/authService";
 import { useNavigate } from "react-router-dom";
 import {
   addCustomer,
@@ -9,41 +10,55 @@ import {
   getAllCustomer,
   getCustomer,
   getDetailsCustomer,
-} from "@/lib/customerService";
+} from "@/lib/api/customerService";
 import type { CustomerFormValues } from "@/lib/zodSchemas";
+import {
+  type Transaction,
+  type Customer,
+  type DetailsCustomer,
+  type FormDataLogin,
+  type TransactionResponse,
+  type DetailsTransactionProps,
+  type DailyTransactionsProps,
+  type MonthlyTransactionProps,
+  type YearlyTransactionProps,
+  type TopCustomerProps,
+  type TopCustomerItems,
+} from "@/lib/interfaces";
+import {
+  detailsTransaction,
+  getAllTransaction,
+} from "@/lib/api/transactionService";
+import {
+  dailyTransactions,
+  monthlyTransactions,
+  topCustomer,
+  yearlyTransactions,
+} from "@/lib/api/summaryService";
 
 interface Props {
   children: ReactNode;
 }
 
-interface FormDataLogin {
-  phone: string;
-  password: string;
-}
-
-interface Customer {
-  code: string;
-  name: string;
-  type: string;
-  companyType: string;
-  areaCode: string;
-  province: {
-    code: string;
-    name: string;
-  };
-  city: {
-    code: string;
-    name: string;
-  };
-  subdistrict: string;
-  address: string;
-}
-
 export const AppContextProvider = ({ children }: Props) => {
   const [user, setUser] = useState(null);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [detailCustomer, setDetailCustomer] = useState<Customer | null>(null);
+  const [detailCustomer, setDetailCustomer] = useState<DetailsCustomer | null>(
+    null
+  );
   const [customerByCode, setCustomerByCode] = useState<Customer | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [detailsTransactionData, setDetailsTransactionData] =
+    useState<DetailsTransactionProps | null>(null);
+  const [dailyTransactionsData, setDailyTransactionsData] =
+    useState<DailyTransactionsProps | null>(null);
+  const [monthlyTransactionsData, setMonthlyTransactionsData] =
+    useState<MonthlyTransactionProps | null>(null);
+  const [yearlyTransactionsData, setYearlyTransactionsData] =
+    useState<YearlyTransactionProps | null>(null);
+  const [topCustomerData, setTopCustomerData] = useState<TopCustomerItems[]>(
+    []
+  );
 
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("accessToken")
@@ -199,6 +214,109 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
+  // Transaction
+  const getTransactionData = async (
+    params?: Record<string, any>
+  ): Promise<TransactionResponse | undefined> => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await getAllTransaction(accToken, params);
+
+      setTransactions(data?.items ?? []);
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    }
+  };
+
+  const getDetailsTransaction = async (no: string) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await detailsTransaction(accToken, no);
+
+      setDetailsTransactionData(data ?? null);
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+    }
+  };
+
+  // Daily Transaction
+  const getDailyTransactions = async (params?: Record<string, any>) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await dailyTransactions(accToken, params);
+      setDailyTransactionsData(data ?? null);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch daily transactions:", error);
+    }
+  };
+
+  // Monthly Transaction
+  const getMonthlyTransactions = async (params?: Record<string, any>) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await monthlyTransactions(accToken, params);
+      setMonthlyTransactionsData(data ?? null);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch daily transactions:", error);
+    }
+  };
+
+  // yearly
+  const getYearlyTransactions = async (params?: Record<string, any>) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await yearlyTransactions(accToken, params);
+      setYearlyTransactionsData(data ?? null);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch daily transactions:", error);
+    }
+  };
+
+  // top customer
+  const getTopCustomer = async (params?: Record<string, any>) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await topCustomer(accToken, params);
+      setTopCustomerData(data?.items ?? []);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch daily transactions:", error);
+    }
+  };
+
   useEffect(() => {
     const accToken = localStorage.getItem("accessToken");
     if (accToken && !user) {
@@ -226,6 +344,18 @@ export const AppContextProvider = ({ children }: Props) => {
     getDetailsDataCustomer,
     customerByCode,
     resetDetailCustomer,
+    transactions,
+    getTransactionData,
+    getDetailsTransaction,
+    detailsTransactionData,
+    getDailyTransactions,
+    dailyTransactionsData,
+    getMonthlyTransactions,
+    monthlyTransactionsData,
+    getYearlyTransactions,
+    yearlyTransactionsData,
+    getTopCustomer,
+    topCustomerData,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

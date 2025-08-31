@@ -1,4 +1,4 @@
-import CustomerForm from "@/components/CustomerForm";
+import CustomerForm from "@/components/Customer/CustomerForm";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { UseAppContext } from "@/context/UseAppContext";
 import {
   Table,
   TableBody,
@@ -6,18 +7,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { RowActions } from "./CustomerActions";
+} from "../ui/table";
+import { Drawer, DrawerTrigger } from "../ui/drawer";
+import { Button } from "../ui/button";
 import CustomerDetail from "./CustomerDetail";
-import { Drawer, DrawerTrigger } from "./ui/drawer";
-import { Button } from "./ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { UseAppContext } from "@/context/UseAppContext";
+import { RowActions } from "./CustomerActions";
 
 const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
   const { resetDetailCustomer, getDetailsDataCustomer } = UseAppContext();
-
-  const [isOpen, setIsOpen] = useState(false);
 
   const isMobile = useIsMobile();
 
@@ -27,7 +24,7 @@ const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
         <TableHeader>
           <TableRow className="bg-muted hover:bg-muted">
             <TableHead className="min-w-[48px] text-center"></TableHead>
-            <TableHead className="min-w-[128px">Code</TableHead>
+            <TableHead className="min-w-[128px]">Code</TableHead>
             <TableHead>Name</TableHead>
             {/* <TableHead>Company Type</TableHead>
                   <TableHead>Type</TableHead> */}
@@ -56,13 +53,13 @@ const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
                       onClick={async () => {
                         resetDetailCustomer();
                         await getDetailsDataCustomer(customer?.code);
-                        setIsOpen(true);
+                        // setIsOpen(true);
                       }}
                     >
                       {customer?.name}
                     </Button>
                   </DrawerTrigger>
-                  <CustomerDetail code={customer?.code} />
+                  <CustomerDetail />
                 </Drawer>
               </TableCell>
               {/* <TableCell>{customer?.companyType}</TableCell>

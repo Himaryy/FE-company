@@ -1,5 +1,5 @@
+import TableCustomer from "@/components/Customer/TableCustomer";
 import PaginationBar from "@/components/PaginationBar";
-import TableCustomer from "@/components/TableCustomer";
 import { buttonVariants } from "@/components/ui/button";
 import { UseAppContext } from "@/context/UseAppContext";
 import { useState } from "react";
@@ -32,13 +32,7 @@ const CustomerPage = () => {
           Add Customer
         </Link>
       </div>
-
-      {/* <Card> */}
-      {/* <CardHeader> */}
       <h1>Here you will see all the customer</h1>
-      {/* </CardHeader> */}
-
-      {/* <CardContent> */}
       <div className="">
         <TableCustomer
           paginatedData={paginatedCustomer}
@@ -54,8 +48,6 @@ const CustomerPage = () => {
           page={currentPage}
         />
       </div>
-      {/* </CardContent> */}
-      {/* </Card> */}
     </>
   );
 };

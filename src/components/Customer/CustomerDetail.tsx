@@ -1,17 +1,15 @@
-import { useEffect } from "react";
 import {
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
   DrawerTitle,
-} from "./ui/drawer";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+} from "../ui/drawer";
+import { Separator } from "../ui/separator";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 import { UseAppContext } from "@/context/UseAppContext";
 
-const CustomerDetail = ({ code }: { code: string }) => {
+const CustomerDetail = () => {
   const { detailCustomer } = UseAppContext();
 
   return (

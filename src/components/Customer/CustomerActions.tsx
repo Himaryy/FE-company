@@ -1,12 +1,12 @@
 import { IconDotsVertical } from "@tabler/icons-react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+} from "../ui/dropdown-menu";
 import { UseAppContext } from "@/context/UseAppContext";
 
 // Dropdown edit delete

@@ -1,67 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import type {
+  Customer,
+  DailyTransactionsProps,
+  DetailsCustomer,
+  DetailsTransactionProps,
+  FormDataLogin,
+  MonthlyTransactionProps,
+  TopCustomerItems,
+  TopCustomerProps,
+  Transaction,
+  TransactionResponse,
+  User,
+  YearlyTransactionProps,
+} from "@/lib/interfaces";
 import type { CustomerFormValues } from "@/lib/zodSchemas";
 import { createContext } from "react";
-
-interface FormDataLogin {
-  phone: string;
-  password: string;
-}
-
-interface User {
-  accessToken: string;
-  code: string;
-  email: string;
-  name: string;
-  phone: string;
-  profileImage: string;
-  roleCode: string;
-  roleName: string;
-}
-interface DetailsCustomer {
-  code: string;
-  name: string;
-  type: string;
-  companyType: string;
-  identityNo: string;
-  npwp: string;
-  email: string;
-  phone: string;
-  mobilePhone: string;
-  area: string;
-  province: {
-    code: string;
-    name: string;
-  };
-  city: {
-    code: string;
-    name: string;
-  };
-  address: string;
-  group: {
-    code: string;
-    name: string;
-  };
-  status: string;
-  target: string;
-  achievement: string;
-  percentage: string;
-}
-interface Customer {
-  code: string;
-  name: string;
-  type: string;
-  companyType: string;
-  areaCode: string;
-  province: {
-    code: string;
-    name: string;
-  };
-  city: {
-    code: string;
-    name: string;
-  };
-  subdistrict: string;
-  address: string;
-}
 
 export interface AppContextType {
   signIn: ({ phone, password }: FormDataLogin) => Promise<void>;
@@ -76,6 +29,30 @@ export interface AppContextType {
   getDetailsDataCustomer: (code: string) => Promise<void>;
   detailCustomer: DetailsCustomer | null;
   resetDetailCustomer: () => void;
+  transactions: Transaction[];
+  getTransactionData: (
+    params?: Record<string, any>
+  ) => Promise<TransactionResponse | undefined>;
+  detailsTransactionData: DetailsTransactionProps | null;
+  getDetailsTransaction: (
+    no: string
+  ) => Promise<DetailsTransactionProps | undefined>;
+  dailyTransactionsData: DailyTransactionsProps | null;
+  getDailyTransactions: (
+    params?: Record<string, any>
+  ) => Promise<DailyTransactionsProps | undefined>;
+  monthlyTransactionsData: MonthlyTransactionProps | null;
+  getMonthlyTransactions: (
+    params?: Record<string, any>
+  ) => Promise<MonthlyTransactionProps | undefined>;
+  yearlyTransactionsData: YearlyTransactionProps | null;
+  getYearlyTransactions: (
+    params?: Record<string, any>
+  ) => Promise<YearlyTransactionProps | undefined>;
+  topCustomerData: TopCustomerItems[];
+  getTopCustomer: (
+    params?: Record<string, any>
+  ) => Promise<TopCustomerProps | undefined>;
 }
 
 export const AppContext = createContext<AppContextType | null>(null);

@@ -1,9 +1,5 @@
 import axios from "axios";
-
-interface FormDataLogin {
-  phone: string;
-  password: string;
-}
+import type { FormDataLogin } from "../interfaces";
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
