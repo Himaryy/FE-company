@@ -1,68 +1,128 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import React from "react";
+import { UseAppContext } from "@/context/UseAppContext";
+import { type RegisterFormValues, RegisterUserSchema } from "@/lib/zodSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 
 const SignUpForm = () => {
+  const { register, signIn } = UseAppContext();
+
+  const form = useForm<RegisterFormValues>({
+    resolver: zodResolver(RegisterUserSchema),
+    defaultValues: {
+      name: "",
+      address: "",
+      phone: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  async function onSubmit(values: RegisterFormValues) {
+    try {
+      await register(values);
+
+      await signIn({
+        phone: values.phone,
+        password: values.password,
+      });
+
+      form.reset();
+    } catch (error) {
+      console.error("error register user ", error);
+    }
+  }
+
   return (
-    <>
-      <div className="grid gap-2">
-        <Label htmlFor="Nama">Nama</Label>
-        <Input
-          value=""
-          // onChange={e=>setEmail(e.target.value)}
-          required
-          type="text"
-          placeholder="John Doe"
-        />
-      </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Grid 2 kolom untuk beberapa field */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <div className="grid gap-2">
-        <Label htmlFor="Phone">Phone Number</Label>
-        <Input
-          value=""
-          // onChange={e=>setEmail(e.target.value)}
-          required
-          type="number"
-          placeholder="08123456789"
-        />
-      </div>
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone Number</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <div className="grid gap-2">
-        <Label htmlFor="Email">Email</Label>
-        <Input
-          value=""
-          // onChange={e=>setEmail(e.target.value)}
-          required
-          type="email"
-          placeholder="JohnDoe@gmail.com"
-        />
-      </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="text" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-      <div className="grid gap-2">
-        <Label htmlFor="Address">Address</Label>
-        <Input
-          value=""
-          // onChange={e=>setEmail(e.target.value)}
-          required
-          type="text"
-          placeholder="Jl. Cikarang"
-        />
-      </div>
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-      <div className="grid gap-2">
-        <Label htmlFor="Password">Password</Label>
-        <Input
-          value=""
-          // onChange={e=>setEmail(e.target.value)}
-          required
-          type="password"
-          placeholder="Jl. Cikarang"
+        {/* Password full width */}
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Address</FormLabel>
+              <FormControl>
+                <Input type="text" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-
-      <Button>Sign Up</Button>
-    </>
+        <Button type="submit" className="w-full">
+          Sign Up
+        </Button>
+      </form>
+    </Form>
   );
 };
 

@@ -15,7 +15,7 @@ import { Link, useParams } from "react-router-dom";
 
 const EditCustomer = () => {
   const { code } = useParams();
-  const { customerByCode, fetchCustomerByCode, editDataCustomer } =
+  const { customerByCode, fetchCustomerByCode, editDataCustomer, navigate } =
     UseAppContext();
 
   const mapCustomerValues = (customer: any) => ({
@@ -34,7 +34,7 @@ const EditCustomer = () => {
   async function onSubmit(values: CustomerFormValues) {
     try {
       await editDataCustomer(values, code);
-      console.log("data update", values);
+      navigate("/customer");
     } catch (error) {
       console.error("error update data", error);
     }

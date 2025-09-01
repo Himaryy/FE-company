@@ -2,52 +2,69 @@ import TableCustomer from "@/components/Customer/TableCustomer";
 import PaginationBar from "@/components/PaginationBar";
 import { buttonVariants } from "@/components/ui/button";
 import { UseAppContext } from "@/context/UseAppContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const CustomerPage = () => {
-  const { customers } = UseAppContext();
+  const { customers, fetchAllCustomer } = UseAppContext();
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
   const itemsPerPage = 10;
 
-  const totalItems = customers.length;
-
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-  const paginatedCustomer = customers.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
 
   const handlePagination = (page: number) => {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      const data = await fetchAllCustomer({
+        page: currentPage,
+        perPage: itemsPerPage,
+        sortBy: "created_at",
+        sortDirection: "desc",
+        startDate: "2023-01-01",
+        endDate: "2026-12-30",
+      });
+      if (data) {
+        setTotalItems(data.total ?? 0);
+      }
+
+      setIsLoading(false);
+    })();
+  }, [currentPage, itemsPerPage]);
+
   return (
     <>
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Customer</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Customer</h1>
         <Link to="/customer/add-customer" className={buttonVariants()}>
           Add Customer
         </Link>
       </div>
-      <h1>Here you will see all the customer</h1>
-      <div className="">
+      <p className="text-muted-foreground">
+        A complete overview of your customers, making it easier to organize,
+        update, and manage customer data.
+      </p>
+      <div className="px-4 lg:px-6">
         <TableCustomer
-          paginatedData={paginatedCustomer}
+          isLoading={isLoading}
+          paginatedData={customers}
           currentPage={currentPage}
           itemsPerPage={itemsPerPage}
         />
       </div>
 
-      <div className="">
-        <PaginationBar
-          total={totalPages}
-          onPageChange={handlePagination}
-          page={currentPage}
-        />
-      </div>
+      <PaginationBar
+        total={totalPages}
+        onPageChange={handlePagination}
+        page={currentPage}
+      />
     </>
   );
 };

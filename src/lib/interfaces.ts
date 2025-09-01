@@ -14,6 +14,47 @@ export interface User {
   roleName: string;
 }
 
+export interface RegisterUser {
+  name: string;
+  phone: string;
+  email: string;
+  address: string;
+  password: string;
+}
+
+export interface ListProvinceItems {
+  code: string;
+  name: string;
+}
+
+export interface ListProvinceResponse {
+  responseCode: string;
+  responseMessage: string;
+  items: ListProvinceItems[];
+}
+
+export interface ListCitiesItems {
+  code: string;
+  name: string;
+}
+
+export interface ListCitiesResponse {
+  responseCode: string;
+  responseMessage: string;
+  items: ListProvinceItems[];
+}
+
+export interface ListSalesItems {
+  code: string;
+  name: string;
+}
+
+export interface ListSalesResponse {
+  responseCode: string;
+  responseMessage: string;
+  items: ListProvinceItems[];
+}
+
 export interface DetailsCustomer {
   code: string;
   name: string;
@@ -44,12 +85,51 @@ export interface DetailsCustomer {
   percentage: string;
 }
 
-export interface Customer {
+export interface CustomerItems {
   code: string;
   name: string;
   type: string;
   companyType: string;
-  areaCode: string;
+  area: string;
+  province: string;
+  city: string;
+  group: {
+    code: string;
+    name: string;
+  };
+  status: string;
+  target: string;
+  achievement: string;
+  percentage: string;
+}
+
+export interface CustomerParams {
+  page: number;
+  perPage: number;
+  sortBy: string;
+  sortDirection: string;
+  endDate: string;
+  startDate: string;
+}
+
+export interface CustomerResponse {
+  items: CustomerItems[];
+  currentPage: number;
+  perPage: number;
+  lastPage: number;
+  total: number;
+}
+
+export interface CustomerByCode {
+  code: string;
+  name: string;
+  type: string;
+  companyType: string;
+  identityNo: string;
+  npwp: string;
+  phone: string;
+  mobilePhone: string;
+  area: string;
   province: {
     code: string;
     name: string;
@@ -58,8 +138,15 @@ export interface Customer {
     code: string;
     name: string;
   };
-  subdistrict: string;
   address: string;
+  group: {
+    code: string;
+    name: string;
+  };
+  status: string;
+  target: string;
+  achievement: string;
+  percentage: string;
 }
 
 // for all transaction

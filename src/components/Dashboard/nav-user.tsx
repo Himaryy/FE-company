@@ -26,7 +26,7 @@ import { UseAppContext } from "@/context/UseAppContext";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
-  const { user, signOut } = UseAppContext();
+  const { user, signOut, navigate } = UseAppContext();
 
   const handleSignOut = async function () {
     await signOut();
@@ -39,7 +39,7 @@ export function NavUser() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="data-[state=open]:bg-primary data-[state=open]:text-foreground hover:bg-primary hover:text-foreground"
             >
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage src={user?.profileImage} alt={user?.name} />
@@ -47,7 +47,7 @@ export function NavUser() {
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user?.name}</span>
-                <span className="text-muted-foreground truncate text-xs">
+                <span className="text-white/60 truncate text-xs">
                   {user?.email}
                 </span>
               </div>
@@ -76,22 +76,28 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
+              <DropdownMenuItem
+                className="group focus:bg-primary focus:text-foreground"
+                onClick={() => navigate("/profile")}
+              >
+                <IconUserCircle className="text-muted-foreground group-hover:text-foreground group-focus:text-foreground" />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
+              <DropdownMenuItem className="group focus:bg-primary focus:text-foreground">
+                <IconCreditCard className="text-muted-foreground group-hover:text-foreground group-focus:text-foreground" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
+              <DropdownMenuItem className="group focus:bg-primary focus:text-foreground">
+                <IconNotification className="text-muted-foreground group-hover:text-foreground group-focus:text-foreground" />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleSignOut}>
-              <IconLogout />
+            <DropdownMenuItem
+              onClick={handleSignOut}
+              className="group focus:bg-destructive focus:text-destructive-foreground"
+            >
+              <IconLogout className="text-muted-foreground group-hover:text-foreground group-focus:text-foreground" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

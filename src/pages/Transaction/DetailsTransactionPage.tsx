@@ -1,19 +1,24 @@
 import TransactionForm from "@/components/Transaction/TransactionForm";
 import { buttonVariants } from "@/components/ui/button";
 import { UseAppContext } from "@/context/UseAppContext";
-import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
 const DetailsTransactionPage = () => {
   const { no } = useParams();
   const { detailsTransactionData, getDetailsTransaction } = UseAppContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   // fetch data
   useEffect(() => {
-    if (no) {
-      getDetailsTransaction(no);
-    }
+    (async () => {
+      if (!no) return;
+
+      setIsLoading(true);
+      await getDetailsTransaction(no);
+      setIsLoading(false);
+    })();
   }, [no]);
 
   return (
@@ -34,10 +39,15 @@ const DetailsTransactionPage = () => {
       </div>
 
       <div className="px-4 lg:px-6">
-        {detailsTransactionData ? (
-          <TransactionForm transaction={detailsTransactionData} />
+        {isLoading ? (
+          <div className="flex items-center justify-center h-[60vh] gap-2">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="text-xl text-muted-foreground">Loading...</span>
+          </div>
         ) : (
-          <p>Loading..</p>
+          detailsTransactionData && (
+            <TransactionForm transaction={detailsTransactionData} />
+          )
         )}
       </div>
     </>

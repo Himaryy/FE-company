@@ -15,7 +15,6 @@ export const RowActions = ({ customerCode }: { customerCode: string }) => {
 
   const handleEdit = () => {
     navigate(`/customer/edit-customer/${customerCode}`);
-    console.log("customerCode", customerCode);
   };
   return (
     <DropdownMenu>

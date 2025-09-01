@@ -12,14 +12,20 @@ import { Drawer, DrawerTrigger } from "../ui/drawer";
 import { Button } from "../ui/button";
 import CustomerDetail from "./CustomerDetail";
 import { RowActions } from "./CustomerActions";
+import { Loader2 } from "lucide-react";
 
-const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
+const TableCustomer = ({
+  paginatedData,
+  currentPage,
+  itemsPerPage,
+  isLoading,
+}) => {
   const { resetDetailCustomer, getDetailsDataCustomer } = UseAppContext();
 
   const isMobile = useIsMobile();
 
   return (
-    <div className="overflow-hidden border rounded-2xl">
+    <div className="overflow-hidden border rounded-lg">
       <Table>
         <TableHeader>
           <TableRow className="bg-muted hover:bg-muted">
@@ -38,43 +44,53 @@ const TableCustomer = ({ paginatedData, currentPage, itemsPerPage }) => {
         </TableHeader>
 
         <TableBody>
-          {paginatedData.map((customer, index) => (
-            <TableRow key={index + 1}>
-              <TableCell className="text-center">
-                {(currentPage - 1) * itemsPerPage + (index + 1)}
-              </TableCell>
-              <TableCell>{customer?.code}</TableCell>
-              <TableCell className="max-w-[256px] truncate">
-                <Drawer direction={isMobile ? "bottom" : "right"}>
-                  <DrawerTrigger asChild>
-                    <Button
-                      variant="link"
-                      className="text-foreground w-fit px-0 text-left cursor-pointer"
-                      onClick={async () => {
-                        resetDetailCustomer();
-                        await getDetailsDataCustomer(customer?.code);
-                        // setIsOpen(true);
-                      }}
-                    >
-                      {customer?.name}
-                    </Button>
-                  </DrawerTrigger>
-                  <CustomerDetail />
-                </Drawer>
-              </TableCell>
-              {/* <TableCell>{customer?.companyType}</TableCell>
-                    <TableCell>{customer?.type}</TableCell> */}
-              <TableCell className="">{customer?.areaCode ?? "-"}</TableCell>
-              <TableCell>{customer?.province?.name}</TableCell>
-              <TableCell>{customer?.city?.name}</TableCell>
-              <TableCell className="max-w-[256px] truncate">
-                {customer?.address}
-              </TableCell>
-              <TableCell>
-                <RowActions customerCode={customer?.code} />
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8}>
+                <div className="flex items-center justify-center h-[20vh]">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+                  <span className="text-xl text-muted-foreground">
+                    Loading...
+                  </span>
+                </div>
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            paginatedData.map((customer, index) => (
+              <TableRow key={index + 1}>
+                <TableCell className="text-center">
+                  {(currentPage - 1) * itemsPerPage + (index + 1)}
+                </TableCell>
+                <TableCell>{customer?.code}</TableCell>
+                <TableCell className="max-w-[256px] truncate">
+                  <Drawer direction={isMobile ? "bottom" : "right"}>
+                    <DrawerTrigger asChild>
+                      <Button
+                        variant="link"
+                        className="text-foreground w-fit px-0 text-left cursor-pointer"
+                        onClick={async () => {
+                          resetDetailCustomer();
+                          await getDetailsDataCustomer(customer?.code);
+                        }}
+                      >
+                        {customer?.name}
+                      </Button>
+                    </DrawerTrigger>
+                    <CustomerDetail />
+                  </Drawer>
+                </TableCell>
+                <TableCell>{customer?.area ?? "-"}</TableCell>
+                <TableCell>{customer?.province}</TableCell>
+                <TableCell>{customer?.city}</TableCell>
+                <TableCell className="max-w-[256px] truncate">
+                  {customer?.address}
+                </TableCell>
+                <TableCell>
+                  <RowActions customerCode={customer?.code} />
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

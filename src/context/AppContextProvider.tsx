@@ -2,7 +2,13 @@
 import { useEffect } from "react";
 import { AppContext } from "./AppContext";
 import { useState, type ReactNode } from "react";
-import { getUser, SignIn, signOutUser } from "@/lib/api/authService";
+import {
+  changePasswordUser,
+  getUser,
+  registerUser,
+  SignIn,
+  signOutUser,
+} from "@/lib/api/authService";
 import { useNavigate } from "react-router-dom";
 import {
   addCustomer,
@@ -11,10 +17,13 @@ import {
   getCustomer,
   getDetailsCustomer,
 } from "@/lib/api/customerService";
-import type { CustomerFormValues } from "@/lib/zodSchemas";
+import type {
+  ChangePasswordFormValues,
+  CustomerFormValues,
+  RegisterFormValues,
+} from "@/lib/zodSchemas";
 import {
   type Transaction,
-  type Customer,
   type DetailsCustomer,
   type FormDataLogin,
   type TransactionResponse,
@@ -22,8 +31,13 @@ import {
   type DailyTransactionsProps,
   type MonthlyTransactionProps,
   type YearlyTransactionProps,
-  type TopCustomerProps,
   type TopCustomerItems,
+  type CustomerItems,
+  type CustomerByCode,
+  type ListProvinceItems,
+  type ListCitiesItems,
+  type ListSalesItems,
+  type CustomerParams,
 } from "@/lib/interfaces";
 import {
   detailsTransaction,
@@ -35,6 +49,9 @@ import {
   topCustomer,
   yearlyTransactions,
 } from "@/lib/api/summaryService";
+import { getAllProvinceList } from "@/lib/api/provinceService";
+import { getAlCityList } from "@/lib/api/cityService";
+import { getAllSales } from "@/lib/api/salesService";
 
 interface Props {
   children: ReactNode;
@@ -42,12 +59,21 @@ interface Props {
 
 export const AppContextProvider = ({ children }: Props) => {
   const [user, setUser] = useState(null);
-  const [customers, setCustomers] = useState<Customer[]>([]);
+
+  const [provinceList, setProvinceList] = useState<ListProvinceItems[]>([]);
+  const [cityList, setCityList] = useState<ListCitiesItems[]>([]);
+  const [salesList, setSalesList] = useState<ListSalesItems[]>([]);
+
+  const [customers, setCustomers] = useState<CustomerItems[]>([]);
   const [detailCustomer, setDetailCustomer] = useState<DetailsCustomer | null>(
     null
   );
-  const [customerByCode, setCustomerByCode] = useState<Customer | null>(null);
+  const [customerByCode, setCustomerByCode] = useState<
+    CustomerByCode | undefined
+  >(undefined);
+
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [totalTransactions, setTotalTransactions] = useState(0);
   const [detailsTransactionData, setDetailsTransactionData] =
     useState<DetailsTransactionProps | null>(null);
   const [dailyTransactionsData, setDailyTransactionsData] =
@@ -56,6 +82,7 @@ export const AppContextProvider = ({ children }: Props) => {
     useState<MonthlyTransactionProps | null>(null);
   const [yearlyTransactionsData, setYearlyTransactionsData] =
     useState<YearlyTransactionProps | null>(null);
+
   const [topCustomerData, setTopCustomerData] = useState<TopCustomerItems[]>(
     []
   );
@@ -82,6 +109,18 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   };
 
+  // Register
+  const register = async (params: RegisterFormValues) => {
+    try {
+      const data = await registerUser(params);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to Register User:", error);
+      throw error;
+    }
+  };
+
   // Logout
   const signOut = async () => {
     try {
@@ -97,10 +136,74 @@ export const AppContextProvider = ({ children }: Props) => {
       setUser(null);
       setToken(null);
       navigate("/sign-in");
-
-      console.log("Logout Success");
     } catch (error) {
       console.error("Logout failed:", error);
+    }
+  };
+
+  // Change Password
+  const changePassword = async (params: ChangePasswordFormValues) => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await changePasswordUser(accToken, params);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to Change Password:", error);
+      throw error;
+    }
+  };
+
+  // Get Province List
+  const getProvinceList = async () => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await getAllProvinceList(accToken);
+      setProvinceList(data?.items ?? []);
+      return data;
+    } catch (error) {
+      console.error("Failed to get list provinces:", error);
+    }
+  };
+
+  // Get City List
+  const getCityList = async () => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await getAlCityList(accToken);
+      setCityList(data?.items ?? []);
+      return data;
+    } catch (error) {
+      console.error("Failed to get list provinces:", error);
+    }
+  };
+
+  // Get sales list
+  const getSalesList = async () => {
+    try {
+      const accToken = localStorage.getItem("accessToken");
+      if (!accToken) {
+        throw new Error("Token not found");
+      }
+
+      const data = await getAllSales(accToken);
+      setSalesList(data?.items ?? []);
+
+      return data;
+    } catch (error) {
+      console.error("Failed to get list sales:", error);
     }
   };
 
@@ -133,8 +236,15 @@ export const AppContextProvider = ({ children }: Props) => {
 
       const data = await addCustomer(accToken, values);
 
-      if (data.success) {
-        await fetchAllCustomer();
+      if (data.responseCode === "20000") {
+        await fetchAllCustomer({
+          page: 1,
+          perPage: 10,
+          sortBy: "created_at",
+          sortDirection: "desc",
+          startDate: "2023-01-01",
+          endDate: "2026-12-30",
+        });
       }
 
       return data;
@@ -155,9 +265,15 @@ export const AppContextProvider = ({ children }: Props) => {
       const data = await editCustomer(accToken, code, values);
 
       // refetch
-      if (data.success) {
-        await fetchAllCustomer();
-        navigate("/customers");
+      if (data.responseCode === "20000") {
+        await fetchAllCustomer({
+          page: 1,
+          perPage: 10,
+          sortBy: "created_at",
+          sortDirection: "desc",
+          startDate: "2023-01-01",
+          endDate: "2026-12-30",
+        });
       }
 
       return data;
@@ -184,16 +300,17 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   // Get All Customer
-  const fetchAllCustomer = async () => {
+  const fetchAllCustomer = async (params?: CustomerParams) => {
     try {
       const accToken = localStorage.getItem("accessToken");
       if (!accToken) {
         throw new Error("Token not found");
       }
 
-      const data = await getAllCustomer(accToken);
+      const data = await getAllCustomer(accToken, params);
 
-      setCustomers(data);
+      setCustomers(data?.items ?? []);
+      return data;
     } catch (error) {
       console.error("Failed to get all customer:", error);
     }
@@ -209,6 +326,7 @@ export const AppContextProvider = ({ children }: Props) => {
       const data = await getCustomer(accToken, code);
 
       setCustomerByCode(data);
+      return data;
     } catch (error) {
       console.error("Failed to get customer detail:", error);
     }
@@ -227,6 +345,7 @@ export const AppContextProvider = ({ children }: Props) => {
       const data = await getAllTransaction(accToken, params);
 
       setTransactions(data?.items ?? []);
+      setTotalTransactions(data?.total ?? 0);
       return data;
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
@@ -324,19 +443,28 @@ export const AppContextProvider = ({ children }: Props) => {
     }
   }, [user]);
 
-  useEffect(() => {
-    const accToken = localStorage.getItem("accessToken");
-    if (accToken) {
-      fetchAllCustomer();
-    }
-  }, []);
+  // useEffect(() => {
+  //   const accToken = localStorage.getItem("accessToken");
+  //   if (accToken) {
+  //     fetchAllCustomer();
+  //   }
+  // }, []);
 
   const value = {
     navigate,
     user,
+    changePassword,
     signIn,
     signOut,
+    register,
+    provinceList,
+    getProvinceList,
+    cityList,
+    getCityList,
+    salesList,
+    getSalesList,
     customers,
+    fetchAllCustomer,
     fetchCustomerByCode,
     detailCustomer,
     addDataCustomer,
@@ -345,6 +473,7 @@ export const AppContextProvider = ({ children }: Props) => {
     customerByCode,
     resetDetailCustomer,
     transactions,
+    totalTransactions,
     getTransactionData,
     getDetailsTransaction,
     detailsTransactionData,

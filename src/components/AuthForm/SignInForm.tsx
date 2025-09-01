@@ -28,7 +28,6 @@ const SignInForm = () => {
   async function handleLogin(formData: LoginFormValues) {
     try {
       await signIn(formData);
-      console.log("login");
     } catch (error) {
       console.error("Login Failed", error);
     }

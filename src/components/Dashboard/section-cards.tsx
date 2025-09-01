@@ -1,6 +1,5 @@
 import {
   Card,
-  CardAction,
   CardDescription,
   CardHeader,
   CardTitle,
@@ -10,24 +9,18 @@ import { Badge } from "../ui/badge";
 import { IconTrendingUp } from "@tabler/icons-react";
 import type {
   DailyTransactionsProps,
-  MonthlyTransactionProps,
   YearlyTransactionProps,
-  TopCustomerProps,
+  ListSalesResponse,
+  ListSalesItems,
 } from "@/lib/interfaces";
 
 interface SectionCardsProps {
   daily?: DailyTransactionsProps | null;
-  monthly?: MonthlyTransactionProps | null;
+  sales?: ListSalesItems[];
   yearly?: YearlyTransactionProps | null;
-  topCustomer?: TopCustomerProps | null;
 }
 
-export function SectionCards({
-  daily,
-  monthly,
-  yearly,
-  topCustomer,
-}: SectionCardsProps) {
+export function SectionCards({ daily, sales, yearly }: SectionCardsProps) {
   return (
     // @5xl/main:grid-cols-4
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-2 lg:grid-cols-3 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 ">
@@ -42,9 +35,9 @@ export function SectionCards({
 
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Monthly Transaction</CardDescription>
+          <CardDescription>Total Sales</CardDescription>
           <CardTitle className="text-lg font-semibold tabular-nums @[250px]/card:text-xl">
-            {monthly?.items.length}
+            {sales?.length ?? 0}
           </CardTitle>
         </CardHeader>
       </Card>

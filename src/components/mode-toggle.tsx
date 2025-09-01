@@ -22,13 +22,22 @@ export function DarkModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("light")}
+          className="group focus:bg-primary focus:text-foreground"
+        >
           Light
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("dark")}
+          className="group focus:bg-primary focus:text-foreground"
+        >
           Dark
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem
+          onClick={() => setTheme("system")}
+          className="group focus:bg-primary focus:text-foreground"
+        >
           System
         </DropdownMenuItem>
       </DropdownMenuContent>

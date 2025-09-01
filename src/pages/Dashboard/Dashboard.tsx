@@ -2,15 +2,11 @@ import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { SectionCards } from "@/components/Dashboard/section-cards";
 import { UseAppContext } from "@/context/UseAppContext";
 import { useEffect, useState } from "react";
-import {
-  type MonthlyTransactionProps,
-  type DailyTransactionsProps,
-  type YearlyTransactionProps,
-  type TopCustomerItems,
-} from "@/lib/interfaces";
+import {} from "@/lib/interfaces";
 import TableTopCustomer from "@/components/Dashboard/TableTopCustomer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
 
 const Dashboard = () => {
   const {
@@ -22,72 +18,78 @@ const Dashboard = () => {
     getYearlyTransactions,
     topCustomerData,
     getTopCustomer,
+    salesList,
+    getSalesList,
   } = UseAppContext();
-  const [dailyData, setDailyData] = useState<DailyTransactionsProps | null>(
-    null
-  );
-  const [monthlyData, setMonthlyData] =
-    useState<MonthlyTransactionProps | null>(null);
-  const [yearlyData, setYearlyData] = useState<YearlyTransactionProps | null>(
-    null
-  );
-  const [topCustomer, setTopCustomer] = useState<TopCustomerItems[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // Daily transaction
   useEffect(() => {
     (async () => {
-      const data = await getDailyTransactions({
+      await getDailyTransactions({
         startDate: "2024-01-09",
         endDate: "2024-12-01",
       });
-
-      if (data) {
-        setDailyData(data);
-      }
     })();
   }, []);
 
   // Monthly transaction
   useEffect(() => {
     (async () => {
-      const data = await getMonthlyTransactions({
+      await getMonthlyTransactions({
         startMonth: "2025-01",
         endMonth: "2025-12",
       });
-
-      if (data) {
-        setMonthlyData(data);
-      }
     })();
   }, []);
 
   // yearly
   useEffect(() => {
     (async () => {
-      const data = await getYearlyTransactions({
+      await getYearlyTransactions({
         year: "2025",
       });
+    })();
+  }, []);
 
-      if (data) {
-        setYearlyData(data);
-      }
+  // sales
+  useEffect(() => {
+    (async () => {
+      await getSalesList();
     })();
   }, []);
 
   // top customer
   useEffect(() => {
     (async () => {
-      const data = await getTopCustomer({
+      await getTopCustomer({
         startDate: "2024-01-09",
         endDate: "2024-12-01",
         limit: 5,
       });
-
-      if (data?.items) {
-        setTopCustomer(data.items);
-      }
     })();
   }, []);
+
+  useEffect(() => {
+    if (
+      !dailyTransactionsData ||
+      !monthlyTransactionsData ||
+      !yearlyTransactionsData ||
+      !salesList ||
+      !topCustomerData
+    ) {
+      setIsLoading(true);
+    } else {
+      setIsLoading(false);
+    }
+  }, [
+    dailyTransactionsData,
+    monthlyTransactionsData,
+    yearlyTransactionsData,
+    salesList,
+    topCustomerData,
+  ]);
 
   return (
     <>
@@ -96,30 +98,39 @@ const Dashboard = () => {
         Overview of daily, monthly, and yearly transactions to help you track
         performance at a glance.
       </p>
-      <SectionCards
-        daily={dailyTransactionsData}
-        monthly={monthlyTransactionsData}
-        yearly={yearlyTransactionsData}
-      />
-
-      <div className="px-4 lg:px-6">
-        <ChartAreaInteractive monthly={monthlyTransactionsData} />
-      </div>
-
-      <div className="px-4 lg:px-6">
-        <div
-          className={cn(
-            buttonVariants({
-              variant: "outline",
-              size: "sm",
-            }),
-            "cursor-default mb-6 bg-accent hover:bg-accent hover:text-foreground dark:bg-input/30 dark:hover:bg-input/30 dark:hover:text-foreground"
-          )}
-        >
-          <span>Top Customers</span>
+      {isLoading ? (
+        <div className="flex items-center justify-center h-[60vh] gap-2">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="text-xl text-muted-foreground">Loading...</span>
         </div>
-        <TableTopCustomer topCustomers={topCustomerData} />
-      </div>
+      ) : (
+        <>
+          <SectionCards
+            daily={dailyTransactionsData}
+            sales={salesList}
+            yearly={yearlyTransactionsData}
+          />
+
+          <div className="px-4 lg:px-6">
+            <ChartAreaInteractive monthly={monthlyTransactionsData} />
+          </div>
+
+          <div className="px-4 lg:px-6">
+            <div
+              className={cn(
+                buttonVariants({
+                  variant: "outline",
+                  size: "sm",
+                }),
+                "cursor-default mb-6 bg-accent hover:bg-accent hover:text-foreground dark:bg-input/30 dark:hover:bg-input/30 dark:hover:text-foreground"
+              )}
+            >
+              <span>Top Customers</span>
+            </div>
+            <TableTopCustomer topCustomers={topCustomerData} />
+          </div>
+        </>
+      )}
     </>
   );
 };

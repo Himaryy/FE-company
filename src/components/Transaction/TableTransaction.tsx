@@ -11,8 +11,15 @@ import { buttonVariants } from "../ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatValue";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
-const TableTransaction = ({ transactions, currentPage, itemsPerPage }) => {
+const TableTransaction = ({
+  transactions,
+  currentPage,
+  itemsPerPage,
+  isLoading,
+}) => {
   const isMobile = useIsMobile();
   return (
     <div className="overflow-hidden border rounded-2xl">
@@ -30,30 +37,43 @@ const TableTransaction = ({ transactions, currentPage, itemsPerPage }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((trx, index) => (
-            <TableRow key={index + 1}>
-              <TableCell className="text-center">
-                {(currentPage - 1) * itemsPerPage + (index + 1)}
+          {isLoading ? (
+            <TableRow>
+              <TableCell colSpan={8}>
+                <div className="flex items-center justify-center h-[20vh]">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
+                  <span className="text-xl text-muted-foreground">
+                    Loading...
+                  </span>
+                </div>
               </TableCell>
-              <TableCell>{trx?.referenceNo}</TableCell>
-              <TableCell>
-                <Link
-                  className={cn(
-                    buttonVariants({ variant: "link" }),
-                    "text-foreground w-fit px-0 text-left cursor-pointer"
-                  )}
-                  to={`/transaction/details-transaction/${trx?.referenceNo}`}
-                >
-                  {trx?.customer?.name}
-                </Link>
-              </TableCell>
-              <TableCell>{trx?.sales}</TableCell>
-              <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
-              <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
-              <TableCell>{trx?.dateOrder}</TableCell>
-              <TableCell>{trx?.paidAt}</TableCell>
             </TableRow>
-          ))}
+          ) : (
+            transactions.map((trx, index) => (
+              <TableRow key={index + 1}>
+                <TableCell className="text-center">
+                  {(currentPage - 1) * itemsPerPage + (index + 1)}
+                </TableCell>
+                <TableCell>{trx?.referenceNo}</TableCell>
+                <TableCell>
+                  <Link
+                    className={cn(
+                      buttonVariants({ variant: "link" }),
+                      "text-foreground w-fit px-0 text-left cursor-pointer"
+                    )}
+                    to={`/transaction/details-transaction/${trx?.referenceNo}`}
+                  >
+                    {trx?.customer?.name}
+                  </Link>
+                </TableCell>
+                <TableCell>{trx?.sales}</TableCell>
+                <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
+                <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
+                <TableCell>{trx?.dateOrder}</TableCell>
+                <TableCell>{trx?.paidAt}</TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </div>

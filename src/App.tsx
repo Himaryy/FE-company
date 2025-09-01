@@ -3,13 +3,14 @@ import AuthLayout from "./pages/Auth/AuthLayout";
 import SignUpForm from "./components/AuthForm/SignUpForm";
 import SignInForm from "./components/AuthForm/SignInForm";
 import { ThemeProvider } from "./components/theme-provider";
-import Layout from "./pages/Dashboard/Layout";
+import Layout from "./pages/Layout";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import CustomerPage from "./pages/Customer/CustomerPage";
 import AddCustomer from "./pages/Customer/ActionPage/AddCustomer";
 import EditCustomer from "./pages/Customer/ActionPage/EditCustomer";
 import TransactionPage from "./pages/Transaction/TransactionPage";
 import DetailsTransactionPage from "./pages/Transaction/DetailsTransactionPage";
+import ProfilePage from "./pages/Profile/ProfilePage";
 
 function App() {
   return (
@@ -36,6 +37,8 @@ function App() {
               path="/transaction/details-transaction/:no"
               element={<DetailsTransactionPage />}
             />
+
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
         </Routes>
       </div>
