@@ -87,7 +87,7 @@ const ProfilePage = () => {
             ) : (
               <div className="flex flex-col gap-8">
                 {/* Upload Foto */}
-                <div className="flex">
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="flex flex-col gap-2 max-w-sm">
                     <h1 className="text-xl font-bold">Edit Profile Picture</h1>
                     <p className="text-muted-foreground text-sm pr-10">
@@ -117,7 +117,7 @@ const ProfilePage = () => {
                         </div>
                       </div>
 
-                      <div className="flex gap-2 ml-auto">
+                      <div className="flex flex-col lg:flex-row gap-2 ml-auto">
                         <Button variant="outline">Upload</Button>
                         <Button variant="destructive">Remove Image</Button>
                       </div>
@@ -128,7 +128,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Personal Information */}
-                <div className="flex">
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="flex flex-col gap-2 max-w-sm">
                     <h1 className="text-xl font-bold">
                       Edit Personal Infoormation
@@ -162,7 +162,7 @@ const ProfilePage = () => {
                 </div>
 
                 {/* Change password */}
-                <div className="flex">
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="flex flex-col gap-2 max-w-sm">
                     <h1 className="text-xl font-bold">Change Password</h1>
                     <p className="text-muted-foreground text-sm pr-10">
