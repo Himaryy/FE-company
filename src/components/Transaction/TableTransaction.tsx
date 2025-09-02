@@ -7,12 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { Button, buttonVariants } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatValue";
-import { useState } from "react";
-import { EyeIcon, Loader2 } from "lucide-react";
+import { EyeIcon } from "lucide-react";
 
 const TableTransaction = ({
   transactions,
