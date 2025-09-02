@@ -34,33 +34,42 @@ const TableCustomer = ({
         <Table>
           <TableHeader>
             <TableRow className="bg-muted hover:bg-muted">
-              <TableHead className="min-w-[48px] text-center"></TableHead>
-              <TableHead className="min-w-[128px]">Code</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Area</TableHead>
-              <TableHead>Province</TableHead>
-              <TableHead>City</TableHead>
-              <TableHead>Address</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead className="w-12 text-center">#</TableHead>
+              <TableHead className="w-28 px-3 text-left">Code</TableHead>
+              <TableHead className="min-w-[200px] px-3 text-left">
+                Customer Name
+              </TableHead>
+              <TableHead className="w-24 px-3 text-center">Area</TableHead>
+              <TableHead className="min-w-[120px] px-3 text-left">
+                Province
+              </TableHead>
+              <TableHead className="min-w-[120px] px-3 text-left">
+                City
+              </TableHead>
+              <TableHead className="min-w-[200px] px-3 text-left">
+                Address
+              </TableHead>
+              <TableHead className="w-20 text-center px-3">Actions</TableHead>
             </TableRow>
           </TableHeader>
+
           <TableBody>
             {paginatedData.map((customer, index) => (
-              <TableRow key={index + 1}>
-                <TableCell className="text-center">
+              <TableRow key={customer.code} className="hover:bg-muted/20">
+                <TableCell className="text-center px-3">
                   {(currentPage - 1) * itemsPerPage + (index + 1)}
                 </TableCell>
-                <TableCell>{customer?.code}</TableCell>
-                <TableCell className="max-w-[256px] truncate">
+
+                <TableCell className="px-3 font-mono text-sm">
+                  {customer?.code}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
                   <Drawer direction={isMobile ? "bottom" : "right"}>
                     <DrawerTrigger asChild>
                       <Button
                         variant="link"
-                        className="text-foreground w-fit px-0 text-left cursor-pointer"
-                        onClick={async () => {
-                          resetDetailCustomer();
-                          await getDetailsDataCustomer(customer?.code);
-                        }}
+                        className="text-foreground hover:text-primary px-0 text-left cursor-pointer truncate block justify-start"
                       >
                         {customer?.name}
                       </Button>
@@ -68,13 +77,41 @@ const TableCustomer = ({
                     <CustomerDetail />
                   </Drawer>
                 </TableCell>
-                <TableCell>{customer?.area ?? "-"}</TableCell>
-                <TableCell>{customer?.province}</TableCell>
-                <TableCell>{customer?.city}</TableCell>
-                <TableCell className="max-w-[256px] truncate">
-                  {customer?.address}
+
+                <TableCell className="px-3 text-center">
+                  <span className="text-xs bg-muted px-2 py-1 rounded">
+                    {customer?.area ?? "-"}
+                  </span>
                 </TableCell>
-                <TableCell>
+
+                <TableCell className="px-3 text-left">
+                  <div
+                    className="max-w-[120px] truncate"
+                    title={customer?.province}
+                  >
+                    {customer?.province}
+                  </div>
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  <div
+                    className="max-w-[120px] truncate"
+                    title={customer?.city}
+                  >
+                    {customer?.city}
+                  </div>
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  <div
+                    className="max-w-[200px] truncate"
+                    title={customer?.address}
+                  >
+                    {customer?.address}
+                  </div>
+                </TableCell>
+
+                <TableCell className="px-3">
                   <RowActions customerCode={customer?.code} />
                 </TableCell>
               </TableRow>

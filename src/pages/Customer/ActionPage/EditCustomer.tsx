@@ -64,7 +64,13 @@ const EditCustomer = () => {
     }
   }, [code]);
 
-  if (!customerByCode) return <p>Loading customer detail...</p>;
+  if (!customerByCode)
+    return (
+      <div className="flex items-center justify-center h-[60vh] gap-4">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+        Loading ...
+      </div>
+    );
 
   return (
     <>

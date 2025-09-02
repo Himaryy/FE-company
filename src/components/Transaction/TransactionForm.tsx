@@ -69,30 +69,57 @@ const TransactionForm = ({ transaction }: TransactionFormProps) => {
       </Card>
 
       {/* Item Purhased */}
-      <div className="overflow-hidden border rounded-2xl">
+      <div className="overflow-hidden border rounded-xl">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted hover:bg-muted">
-              <TableHead></TableHead>
-              <TableHead>Product Name</TableHead>
-              <TableHead>Qty</TableHead>
-              <TableHead>Price</TableHead>
-              <TableHead>Discount</TableHead>
-              <TableHead>Price Sub Total</TableHead>
-              <TableHead>Margin Sub Total</TableHead>
+              <TableHead className="w-12 px-3 text-center">#</TableHead>
+              <TableHead className="min-w-[220px] px-3 text-left">
+                Product Name
+              </TableHead>
+              <TableHead className="w-24 px-3 text-left">Qty</TableHead>
+              <TableHead className="w-28 px-3 text-left">Price</TableHead>
+              <TableHead className="w-24 px-3 text-left">Discount</TableHead>
+              <TableHead className="w-32 px-3 text-left">
+                Price Sub Total
+              </TableHead>
+              <TableHead className="w-32 px-3 text-left">
+                Margin Sub Total
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {transaction?.items?.map((item, index) => (
-              <TableRow key={index + 1}>
-                <TableCell className="text-center">{index + 1}</TableCell>
-                <TableCell>{item.productName}</TableCell>
-                <TableCell>{formatNumber(item.quantity)}</TableCell>
-                <TableCell>{formatCurrency(item.price)}</TableCell>
-                <TableCell>{formatPercent(item.discount)}</TableCell>
-                <TableCell>{formatCurrency(item.priceSubtotal)}</TableCell>
-                <TableCell>{formatCurrency(item.marginSubtotal)}</TableCell>
+              <TableRow key={item.productName} className="hover:bg-muted/20">
+                <TableCell className="px-3 text-center">{index + 1}</TableCell>
+
+                <TableCell
+                  className="px-3  text-left truncate"
+                  title={item.productName}
+                >
+                  {item.productName}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  {formatNumber(item.quantity)}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  {formatCurrency(item.price)}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  {formatPercent(item.discount)}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  {formatCurrency(item.priceSubtotal)}
+                </TableCell>
+
+                <TableCell className="px-3 text-left">
+                  {formatCurrency(item.marginSubtotal)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

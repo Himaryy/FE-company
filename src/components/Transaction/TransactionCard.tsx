@@ -38,9 +38,12 @@ export function TransactionCard({
       <Card className="@container/card">
         <CardHeader>
           <CardDescription>Total Transactions</CardDescription>
-          <CardTitle className="text-lg font-semibold tabular-nums @[250px]/card:text-xl">
-            {total ?? "0"}
-          </CardTitle>
+          <div className="flex flex-col gap-2">
+            <CardTitle className="text-lg font-semibold tabular-nums @[250px]/card:text-xl">
+              {total ?? "0"}
+            </CardTitle>
+            <span className="text-xs text-muted-foreground">In One Year</span>
+          </div>
         </CardHeader>
       </Card>
 
@@ -48,9 +51,9 @@ export function TransactionCard({
         <CardHeader>
           <div className="flex justify-between">
             <CardDescription>Yearly Revenue</CardDescription>
-            <Badge variant="outline">
+            <Badge className="text-green-600" variant="outline">
               <IconTrendingUp />
-              {yearly?.percentage}
+              {yearly?.percentage} %
             </Badge>
           </div>
           <CardTitle className="text-lg font-semibold tabular-nums @[250px]/card:text-xl">

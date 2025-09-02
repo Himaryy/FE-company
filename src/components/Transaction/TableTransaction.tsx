@@ -28,39 +28,58 @@ const TableTransaction = ({
           Loading...
         </div>
       ) : (
-        <Table className="table-fixed w-full">
+        <Table className="w-full">
           <TableHeader>
             <TableRow className="bg-muted hover:bg-muted">
-              <TableHead className="w-12 text-center"></TableHead>
-              <TableHead className="w-44">Invoice</TableHead>
-              <TableHead className="w-60">Customer Name</TableHead>
-              <TableHead className="w-60">Sales Name</TableHead>
-              <TableHead className="w-35 text-left">Amount Due</TableHead>
-              <TableHead className="w-35 text-left">Amount Total</TableHead>
-              <TableHead className="w-32">Date Order</TableHead>
-              <TableHead className="w-32">Paid At</TableHead>
-              <TableHead className="w-16 text-center">Action</TableHead>
+              <TableHead className="w-12 text-center px-3 py-2">#</TableHead>
+              <TableHead className="w-28 px-3 py-2 text-left">
+                Invoice
+              </TableHead>
+              <TableHead className="w-60 px-3 py-2 text-left">
+                Customer Name
+              </TableHead>
+              {/* <TableHead className="w-60 px-3 py-2 text-left">
+                Sales Name
+              </TableHead> */}
+              {/* <TableHead className="w-32 px-3 py-2 text-left">
+                Amount Due
+              </TableHead> */}
+              <TableHead className="w-32 px-3 py-2 text-left">
+                Amount Total
+              </TableHead>
+              {/* <TableHead className="w-32 px-3 py-2 text-left">
+                Date Order
+              </TableHead> */}
+              <TableHead className="w-32 px-3 py-2 text-left">
+                Paid At
+              </TableHead>
+              <TableHead className="w-16 text-center px-3 py-2">
+                Action
+              </TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {transactions.map((trx, index) => (
-              <TableRow key={index + 1} className="align-top">
-                <TableCell className="text-center">
+              <TableRow key={trx.referenceNo} className="hover:bg-muted/20">
+                <TableCell className="text-center px-3">
                   {(currentPage - 1) * itemsPerPage + (index + 1)}
                 </TableCell>
 
-                <TableCell>
-                  <div className="truncate" title={trx?.referenceNo}>
+                <TableCell className="px-3">
+                  <div
+                    className="truncate font-mono text-sm"
+                    title={trx?.referenceNo}
+                  >
                     {trx?.referenceNo}
                   </div>
                 </TableCell>
 
-                <TableCell>
+                <TableCell className="px-3">
                   <Link
                     className={cn(
                       buttonVariants({ variant: "link" }),
-                      "text-foreground px-0 text-left cursor-pointer truncate block"
+                      "text-foreground hover:text-primary px-0 text-left cursor-pointer truncate block justify-start"
                     )}
                     to={`/transaction/details-transaction/${trx?.referenceNo}`}
                     title={trx?.customer?.name}
@@ -69,43 +88,43 @@ const TableTransaction = ({
                   </Link>
                 </TableCell>
 
-                <TableCell>
+                {/* <TableCell className="px-3 py-3">
                   <div className="truncate" title={trx?.sales}>
                     {trx?.sales}
                   </div>
-                </TableCell>
+                </TableCell> */}
 
-                <TableCell className="text-left">
+                {/* <TableCell className="px-3 py-3">
                   <div
-                    className="truncate"
+                    className="truncate text-right font-medium"
                     title={formatCurrency(trx?.amountDue)}
                   >
                     {formatCurrency(trx?.amountDue)}
                   </div>
-                </TableCell>
+                </TableCell> */}
 
-                <TableCell className="text-left">
+                <TableCell className="px-3">
                   <div
-                    className="truncate"
+                    className="truncate text-left font-medium"
                     title={formatCurrency(trx?.amountTotal)}
                   >
                     {formatCurrency(trx?.amountTotal)}
                   </div>
                 </TableCell>
 
-                <TableCell>
+                {/* <TableCell className="px-3 py-3">
                   <div className="truncate" title={trx?.dateOrder}>
                     {trx?.dateOrder}
                   </div>
-                </TableCell>
+                </TableCell> */}
 
-                <TableCell>
+                <TableCell className="px-3">
                   <div className="truncate" title={trx?.paidAt}>
                     {trx?.paidAt}
                   </div>
                 </TableCell>
 
-                <TableCell className="text-center">
+                <TableCell className="text-center px-3">
                   <Link
                     to={`/transaction/details-transaction/${trx?.referenceNo}`}
                     className={cn(
