@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import type {
+  CustomerAddResponse,
   CustomerByCode,
+  CustomerEditResponse,
   CustomerParams,
   CustomerResponse,
 } from "../interfaces";
@@ -14,7 +16,7 @@ const api = axios.create({
 export const addCustomer = async (
   token: string,
   params?: Record<string, any>
-) => {
+): Promise<CustomerAddResponse> => {
   const response = await api.post("/customers", params, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -27,7 +29,7 @@ export const editCustomer = async (
   token: string,
   code: string,
   params?: Record<string, any>
-) => {
+): Promise<CustomerEditResponse> => {
   const response = await api.put(`/customers/${code}`, params, {
     headers: {
       Authorization: `Bearer ${token}`,

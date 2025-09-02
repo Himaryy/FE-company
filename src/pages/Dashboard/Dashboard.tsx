@@ -6,10 +6,10 @@ import {} from "@/lib/interfaces";
 import TableTopCustomer from "@/components/Dashboard/TableTopCustomer";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
 
 const Dashboard = () => {
   const {
+    token,
     dailyTransactionsData,
     getDailyTransactions,
     monthlyTransactionsData,
@@ -27,50 +27,60 @@ const Dashboard = () => {
   // Daily transaction
   useEffect(() => {
     (async () => {
+      if (!token) return;
       await getDailyTransactions({
         startDate: "2024-01-09",
         endDate: "2024-12-01",
       });
     })();
-  }, []);
+  }, [token]);
 
   // Monthly transaction
   useEffect(() => {
     (async () => {
+      if (!token) return;
+
       await getMonthlyTransactions({
         startMonth: "2025-01",
         endMonth: "2025-12",
       });
     })();
-  }, []);
+  }, [token]);
 
   // yearly
   useEffect(() => {
     (async () => {
+      if (!token) return;
+
       await getYearlyTransactions({
         year: "2025",
       });
     })();
-  }, []);
+  }, [token]);
 
   // sales
   useEffect(() => {
     (async () => {
+      if (!token) return;
+
       await getSalesList();
     })();
-  }, []);
+  }, [token]);
 
   // top customer
   useEffect(() => {
     (async () => {
+      if (!token) return;
+
       await getTopCustomer({
         startDate: "2024-01-09",
         endDate: "2024-12-01",
         limit: 5,
       });
     })();
-  }, []);
+  }, [token]);
 
+  // Loading
   useEffect(() => {
     if (
       !dailyTransactionsData ||
@@ -99,9 +109,9 @@ const Dashboard = () => {
         performance at a glance.
       </p>
       {isLoading ? (
-        <div className="flex items-center justify-center h-[60vh] gap-2">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <span className="text-xl text-muted-foreground">Loading...</span>
+        <div className="flex items-center justify-center h-[60vh] gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+          Loading ...
         </div>
       ) : (
         <>

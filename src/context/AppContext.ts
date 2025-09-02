@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type {
+  ChangePasswordResponse,
+  CustomerAddResponse,
   CustomerByCode,
+  CustomerEditResponse,
   CustomerItems,
   CustomerParams,
   CustomerResponse,
@@ -13,7 +16,10 @@ import type {
   ListProvinceResponse,
   ListSalesItems,
   ListSalesResponse,
+  LogoutResponse,
   MonthlyTransactionProps,
+  RegisterResponse,
+  SignInResponse,
   TopCustomerItems,
   TopCustomerProps,
   Transaction,
@@ -29,12 +35,17 @@ import type {
 import { createContext } from "react";
 
 export interface AppContextType {
-  signIn: ({ phone, password }: FormDataLogin) => Promise<void>;
-  signOut: () => Promise<void>;
-  register: (params: RegisterFormValues) => Promise<void>;
+  signIn: ({ phone, password }: FormDataLogin) => Promise<SignInResponse>;
+  signOut: () => Promise<LogoutResponse>;
+  register: (params: RegisterFormValues) => Promise<RegisterResponse>;
   user: User | null;
-  changePassword: (params: ChangePasswordFormValues) => Promise<void>;
+  loadingUserData: boolean;
+  // fetchUserData: () => Promise<User | null>;
+  changePassword: (
+    params: ChangePasswordFormValues
+  ) => Promise<ChangePasswordResponse>;
   navigate: (path: string) => void;
+  token: string | null;
 
   // province
   provinceList: ListProvinceItems[];
@@ -57,8 +68,11 @@ export interface AppContextType {
   fetchCustomerByCode: (code: string) => Promise<CustomerByCode | undefined>;
   customerByCode: CustomerByCode | undefined;
 
-  addDataCustomer: (values: CustomerFormValues) => Promise<void>;
-  editDataCustomer: (values: CustomerFormValues, code: string) => Promise<void>;
+  addDataCustomer: (values: CustomerFormValues) => Promise<CustomerAddResponse>;
+  editDataCustomer: (
+    values: CustomerFormValues,
+    code: string
+  ) => Promise<CustomerEditResponse>;
   getDetailsDataCustomer: (code: string) => Promise<void>;
   detailCustomer: DetailsCustomer | null;
   resetDetailCustomer: () => void;

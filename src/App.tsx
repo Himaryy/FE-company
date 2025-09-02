@@ -11,11 +11,14 @@ import EditCustomer from "./pages/Customer/ActionPage/EditCustomer";
 import TransactionPage from "./pages/Transaction/TransactionPage";
 import DetailsTransactionPage from "./pages/Transaction/DetailsTransactionPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
+import { Toaster } from "./components/ui/sonner";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <div className="min-h-screen">
+        <Toaster />
         <Routes>
           <Route element={<AuthLayout />}>
             <Route path="/sign-up" element={<SignUpForm />} />
@@ -23,22 +26,24 @@ function App() {
           </Route>
 
           <Route path="/" element={<Layout />}>
-            <Route path="/" element={<Dashboard />} />
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Dashboard />} />
 
-            <Route path="/customer" element={<CustomerPage />} />
-            <Route path="/customer/add-customer" element={<AddCustomer />} />
-            <Route
-              path="/customer/edit-customer/:code"
-              element={<EditCustomer />}
-            />
+              <Route path="/customer" element={<CustomerPage />} />
+              <Route path="/customer/add-customer" element={<AddCustomer />} />
+              <Route
+                path="/customer/edit-customer/:code"
+                element={<EditCustomer />}
+              />
 
-            <Route path="/transaction" element={<TransactionPage />} />
-            <Route
-              path="/transaction/details-transaction/:no"
-              element={<DetailsTransactionPage />}
-            />
+              <Route path="/transaction" element={<TransactionPage />} />
+              <Route
+                path="/transaction/details-transaction/:no"
+                element={<DetailsTransactionPage />}
+              />
 
-            <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
           </Route>
         </Routes>
       </div>

@@ -12,9 +12,13 @@ import {
   FormLabel,
   FormMessage,
 } from "../ui/form";
+import { useState } from "react";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const SignUpForm = () => {
   const { register, signIn } = UseAppContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(RegisterUserSchema),
@@ -28,17 +32,31 @@ const SignUpForm = () => {
   });
 
   async function onSubmit(values: RegisterFormValues) {
+    setIsLoading(true);
     try {
-      await register(values);
+      const res = await register(values);
 
-      await signIn({
-        phone: values.phone,
-        password: values.password,
+      if (res.responseCode === "20000") {
+        await signIn({
+          phone: values.phone,
+          password: values.password,
+        });
+
+        form.reset();
+
+        toast.success("Login Berhasil", {
+          richColors: true,
+          position: "top-right",
+        });
+      }
+    } catch {
+      toast.error("Gagal membuat akun", {
+        description: "Unexpected error occured",
+        richColors: true,
+        position: "top-right",
       });
-
-      form.reset();
-    } catch (error) {
-      console.error("error register user ", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -118,8 +136,15 @@ const SignUpForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
-          Sign Up
+        <Button disabled={isLoading} type="submit" className="w-full">
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="size-4 animate-spin" />
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <p>Sign Up</p>
+          )}
         </Button>
       </form>
     </Form>

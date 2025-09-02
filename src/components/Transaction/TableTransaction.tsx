@@ -7,12 +7,12 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { buttonVariants } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { formatCurrency } from "@/lib/formatValue";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { EyeIcon, Loader2 } from "lucide-react";
 
 const TableTransaction = ({
   transactions,
@@ -23,59 +23,106 @@ const TableTransaction = ({
   const isMobile = useIsMobile();
   return (
     <div className="overflow-hidden border rounded-2xl">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-muted hover:bg-muted">
-            <TableHead className="min-w-[48px] text-center"></TableHead>
-            <TableHead className="min-w-[128px]">Invoice</TableHead>
-            <TableHead>Customer Name</TableHead>
-            <TableHead>Sales Name</TableHead>
-            <TableHead>Amount Due</TableHead>
-            <TableHead>Amount Total</TableHead>
-            <TableHead>Date Order</TableHead>
-            <TableHead>Paid At</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {isLoading ? (
-            <TableRow>
-              <TableCell colSpan={8}>
-                <div className="flex items-center justify-center h-[20vh]">
-                  <Loader2 className="w-8 h-8 animate-spin text-primary mr-2" />
-                  <span className="text-xl text-muted-foreground">
-                    Loading...
-                  </span>
-                </div>
-              </TableCell>
+      {isLoading ? (
+        <div className="flex items-center gap-4 justify-center py-10">
+          <div className="animate-spin rounded-full size-10 border-b-2 border-primary"></div>
+          Loading...
+        </div>
+      ) : (
+        <Table className="table-fixed w-full">
+          <TableHeader>
+            <TableRow className="bg-muted hover:bg-muted">
+              <TableHead className="w-12 text-center"></TableHead>
+              <TableHead className="w-44">Invoice</TableHead>
+              <TableHead className="w-60">Customer Name</TableHead>
+              <TableHead className="w-60">Sales Name</TableHead>
+              <TableHead className="w-35 text-left">Amount Due</TableHead>
+              <TableHead className="w-35 text-left">Amount Total</TableHead>
+              <TableHead className="w-32">Date Order</TableHead>
+              <TableHead className="w-32">Paid At</TableHead>
+              <TableHead className="w-16 text-center">Action</TableHead>
             </TableRow>
-          ) : (
-            transactions.map((trx, index) => (
-              <TableRow key={index + 1}>
+          </TableHeader>
+
+          <TableBody>
+            {transactions.map((trx, index) => (
+              <TableRow key={index + 1} className="align-top">
                 <TableCell className="text-center">
                   {(currentPage - 1) * itemsPerPage + (index + 1)}
                 </TableCell>
-                <TableCell>{trx?.referenceNo}</TableCell>
+
+                <TableCell>
+                  <div className="truncate" title={trx?.referenceNo}>
+                    {trx?.referenceNo}
+                  </div>
+                </TableCell>
+
                 <TableCell>
                   <Link
                     className={cn(
                       buttonVariants({ variant: "link" }),
-                      "text-foreground w-fit px-0 text-left cursor-pointer"
+                      "text-foreground px-0 text-left cursor-pointer truncate block"
                     )}
                     to={`/transaction/details-transaction/${trx?.referenceNo}`}
+                    title={trx?.customer?.name}
                   >
                     {trx?.customer?.name}
                   </Link>
                 </TableCell>
-                <TableCell>{trx?.sales}</TableCell>
-                <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
-                <TableCell>{formatCurrency(trx?.amountDue)}</TableCell>
-                <TableCell>{trx?.dateOrder}</TableCell>
-                <TableCell>{trx?.paidAt}</TableCell>
+
+                <TableCell>
+                  <div className="truncate" title={trx?.sales}>
+                    {trx?.sales}
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-left">
+                  <div
+                    className="truncate"
+                    title={formatCurrency(trx?.amountDue)}
+                  >
+                    {formatCurrency(trx?.amountDue)}
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-left">
+                  <div
+                    className="truncate"
+                    title={formatCurrency(trx?.amountTotal)}
+                  >
+                    {formatCurrency(trx?.amountTotal)}
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <div className="truncate" title={trx?.dateOrder}>
+                    {trx?.dateOrder}
+                  </div>
+                </TableCell>
+
+                <TableCell>
+                  <div className="truncate" title={trx?.paidAt}>
+                    {trx?.paidAt}
+                  </div>
+                </TableCell>
+
+                <TableCell className="text-center">
+                  <Link
+                    to={`/transaction/details-transaction/${trx?.referenceNo}`}
+                    className={cn(
+                      buttonVariants({ variant: "outline", size: "icon" }),
+                      "hover:!bg-primary hover:!text-primary-foreground"
+                    )}
+                  >
+                    <EyeIcon size={16} />
+                    <span className="sr-only">Details</span>
+                  </Link>
+                </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ))}
+          </TableBody>
+        </Table>
+      )}
     </div>
   );
 };

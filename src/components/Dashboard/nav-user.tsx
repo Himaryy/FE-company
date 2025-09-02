@@ -23,13 +23,35 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { UseAppContext } from "@/context/UseAppContext";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 export function NavUser() {
   const { isMobile } = useSidebar();
   const { user, signOut, navigate } = UseAppContext();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSignOut = async function () {
-    await signOut();
+    setIsLoading(true);
+    try {
+      const res = await signOut();
+
+      if (res?.responseCode === "20000") {
+        toast.success("Logout Berhasil", {
+          richColors: true,
+          position: "top-right",
+        });
+      }
+    } catch {
+      toast.error("Logout Gagal", {
+        description: "Unexpected error occured",
+        richColors: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -96,9 +118,17 @@ export function NavUser() {
             <DropdownMenuItem
               onClick={handleSignOut}
               className="group focus:bg-destructive focus:text-destructive-foreground"
+              disabled={isLoading}
             >
               <IconLogout className="text-muted-foreground group-hover:text-foreground group-focus:text-foreground" />
-              Log out
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loader2 className="size-4 animate-spin" />
+                  <span>Loading...</span>
+                </div>
+              ) : (
+                <p>Logout</p>
+              )}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

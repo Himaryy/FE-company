@@ -463,11 +463,18 @@ function SidebarMenu({ className, ...props }: React.ComponentProps<"ul">) {
 }
 
 function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
+  const { isMobile, setOpenMobile } = useSidebar();
+
   return (
     <li
       data-slot="sidebar-menu-item"
       data-sidebar="menu-item"
       className={cn("group/menu-item relative", className)}
+      onClick={() => {
+        if (isMobile) {
+          setOpenMobile(false); // tutup, bukan toggle
+        }
+      }}
       {...props}
     />
   );

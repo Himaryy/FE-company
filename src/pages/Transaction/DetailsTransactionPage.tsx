@@ -1,7 +1,7 @@
 import TransactionForm from "@/components/Transaction/TransactionForm";
 import { buttonVariants } from "@/components/ui/button";
 import { UseAppContext } from "@/context/UseAppContext";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
@@ -40,9 +40,9 @@ const DetailsTransactionPage = () => {
 
       <div className="px-4 lg:px-6">
         {isLoading ? (
-          <div className="flex items-center justify-center h-[60vh] gap-2">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="text-xl text-muted-foreground">Loading...</span>
+          <div className="flex items-center justify-center gap-4 h-screen">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+            Loading ...
           </div>
         ) : (
           detailsTransactionData && (

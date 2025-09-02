@@ -14,6 +14,27 @@ export interface User {
   roleName: string;
 }
 
+export interface SignInResponse {
+  responseCode: string;
+  responseMessage: string;
+  accessToken: string;
+}
+
+export interface RegisterResponse {
+  responseCode: string;
+  responseMessage: string;
+}
+
+export interface LogoutResponse {
+  responseCode: string;
+  responseMessage: string;
+}
+
+export interface ChangePasswordResponse {
+  responseCode: string;
+  responseMessage: string;
+}
+
 export interface RegisterUser {
   name: string;
   phone: string;
@@ -83,6 +104,16 @@ export interface DetailsCustomer {
   target: string;
   achievement: string;
   percentage: string;
+}
+
+export interface CustomerAddResponse {
+  responseCode: string;
+  responseMessage: string;
+}
+
+export interface CustomerEditResponse {
+  responseCode: string;
+  responseMessage: string;
 }
 
 export interface CustomerItems {

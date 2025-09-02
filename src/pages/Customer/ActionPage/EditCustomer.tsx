@@ -10,13 +10,16 @@ import {
 import { UseAppContext } from "@/context/UseAppContext";
 import type { CustomerFormValues } from "@/lib/zodSchemas";
 import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const EditCustomer = () => {
   const { code } = useParams();
   const { customerByCode, fetchCustomerByCode, editDataCustomer, navigate } =
     UseAppContext();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const mapCustomerValues = (customer: any) => ({
     name: customer.name || "",
@@ -32,11 +35,26 @@ const EditCustomer = () => {
   });
 
   async function onSubmit(values: CustomerFormValues) {
+    setIsLoading(true);
     try {
-      await editDataCustomer(values, code);
-      navigate("/customer");
-    } catch (error) {
-      console.error("error update data", error);
+      const res = await editDataCustomer(values, code);
+
+      if (res.responseCode === "20000") {
+        navigate("/customer");
+
+        toast.success("Berhasil edit data customer", {
+          richColors: true,
+          position: "top-right",
+        });
+      }
+    } catch {
+      toast.error("Gagal menambah data customer", {
+        description: "Unexpected error occured",
+        richColors: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -74,6 +92,7 @@ const EditCustomer = () => {
         <CardContent>
           {/* Customer Form Component */}
           <CustomerForm
+            isLoadingPostData={isLoading}
             initialValues={mapCustomerValues(customerByCode)}
             onSubmit={onSubmit}
           />

@@ -32,6 +32,7 @@ interface CustomerFormProps {
   onSubmit: (values: CustomerFormValues) => void;
   provinceList?: ListProvinceItems[];
   cityList?: ListCitiesItems[];
+  isLoadingPostData: boolean;
 }
 
 const CustomerForm = ({
@@ -39,6 +40,7 @@ const CustomerForm = ({
   onSubmit,
   provinceList,
   cityList,
+  isLoadingPostData,
 }: CustomerFormProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -100,9 +102,9 @@ const CustomerForm = ({
   return (
     <>
       {isLoading ? (
-        <div className="flex items-center justify-center h-[60vh] gap-2">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <span className="text-xl text-muted-foreground">Loading...</span>
+        <div className="flex items-center justify-center h-[60vh] gap-4">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+          Loading ...
         </div>
       ) : (
         <Form {...form}>
@@ -342,17 +344,31 @@ const CustomerForm = ({
 
             <div className="text-right">
               {isAddCustomer ? (
-                <>
-                  <Button type="submit">
-                    Add Customer <PlusIcon className="ml-1" size={16} />
-                  </Button>
-                </>
+                <Button type="submit" disabled={isLoadingPostData}>
+                  {isLoadingPostData ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      Add Customer <PlusIcon className="size-4" />
+                    </>
+                  )}
+                </Button>
               ) : (
-                <>
-                  <Button type="submit">
-                    Update Customer <PlusIcon className="ml-1" size={16} />
-                  </Button>
-                </>
+                <Button type="submit" disabled={isLoadingPostData}>
+                  {isLoadingPostData ? (
+                    <>
+                      <Loader2 className="size-4 animate-spin" />
+                      Loading...
+                    </>
+                  ) : (
+                    <>
+                      Update Customer <PlusIcon className="size-4" />
+                    </>
+                  )}
+                </Button>
               )}
             </div>
           </form>

@@ -38,6 +38,13 @@ import {
   type ListCitiesItems,
   type ListSalesItems,
   type CustomerParams,
+  type SignInResponse,
+  type LogoutResponse,
+  type RegisterResponse,
+  type CustomerAddResponse,
+  type CustomerEditResponse,
+  type ChangePasswordResponse,
+  type User,
 } from "@/lib/interfaces";
 import {
   detailsTransaction,
@@ -58,7 +65,7 @@ interface Props {
 }
 
 export const AppContextProvider = ({ children }: Props) => {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const [provinceList, setProvinceList] = useState<ListProvinceItems[]>([]);
   const [cityList, setCityList] = useState<ListCitiesItems[]>([]);
@@ -90,27 +97,35 @@ export const AppContextProvider = ({ children }: Props) => {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("accessToken")
   );
+  const [loadingUserData, setLoadingUserData] = useState(true);
 
   const navigate = useNavigate();
   const resetDetailCustomer = () => setDetailCustomer(null);
 
   // Login
-  const signIn = async ({ phone, password }: FormDataLogin) => {
+  const signIn = async ({
+    phone,
+    password,
+  }: FormDataLogin): Promise<SignInResponse> => {
     try {
       const data = await SignIn({ phone, password });
 
       localStorage.setItem("accessToken", data.accessToken);
+      await fetchUserData(data.accessToken);
 
       navigate("/");
 
-      await fetchUserData();
+      return data;
     } catch (error) {
       console.error("Login failed:", error);
+      throw error;
     }
   };
 
   // Register
-  const register = async (params: RegisterFormValues) => {
+  const register = async (
+    params: RegisterFormValues
+  ): Promise<RegisterResponse> => {
     try {
       const data = await registerUser(params);
 
@@ -122,34 +137,33 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   // Logout
-  const signOut = async () => {
+  const signOut = async (): Promise<LogoutResponse> => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
-        throw new Error("Token not found");
-      }
+      if (!token) throw new Error("Token not found");
 
-      await signOutUser(accToken);
+      const data = await signOutUser(token);
       localStorage.removeItem("user");
       localStorage.removeItem("accessToken");
 
       setUser(null);
       setToken(null);
       navigate("/sign-in");
+
+      return data;
     } catch (error) {
       console.error("Logout failed:", error);
+      throw error;
     }
   };
 
   // Change Password
-  const changePassword = async (params: ChangePasswordFormValues) => {
+  const changePassword = async (
+    params: ChangePasswordFormValues
+  ): Promise<ChangePasswordResponse> => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
-        throw new Error("Token not found");
-      }
+      if (!token) throw new Error("Token not found");
 
-      const data = await changePasswordUser(accToken, params);
+      const data = await changePasswordUser(token, params);
 
       return data;
     } catch (error) {
@@ -161,12 +175,9 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get Province List
   const getProvinceList = async () => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
-        throw new Error("Token not found");
-      }
+      if (!token) throw new Error("Token not found");
 
-      const data = await getAllProvinceList(accToken);
+      const data = await getAllProvinceList(token);
       setProvinceList(data?.items ?? []);
       return data;
     } catch (error) {
@@ -177,12 +188,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get City List
   const getCityList = async () => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await getAlCityList(accToken);
+      const data = await getAlCityList(token);
       setCityList(data?.items ?? []);
       return data;
     } catch (error) {
@@ -193,12 +203,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get sales list
   const getSalesList = async () => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await getAllSales(accToken);
+      const data = await getAllSales(token);
       setSalesList(data?.items ?? []);
 
       return data;
@@ -208,33 +217,40 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   // Get Data User
-  const fetchUserData = async () => {
-    try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
-        throw new Error("Token not found");
-      }
+  const fetchUserData = async (tokenParams?: string) => {
+    const currentToken = tokenParams ?? token;
+    if (!currentToken) {
+      setLoadingUserData(false);
+      return;
+    }
 
-      const data = await getUser(accToken);
-      setUser(data);
-      setToken(accToken);
+    try {
+      setLoadingUserData(true);
+      const data = await getUser(currentToken);
+      setUser(data ?? null);
+      setToken(currentToken);
 
       localStorage.setItem("user", JSON.stringify(data));
       // navigate("/");
+      return data;
     } catch (error) {
       console.error("Failed to get user:", error);
+      return null;
+    } finally {
+      setLoadingUserData(false);
     }
   };
 
   // Add Customer
-  const addDataCustomer = async (values: CustomerFormValues) => {
+  const addDataCustomer = async (
+    values: CustomerFormValues
+  ): Promise<CustomerAddResponse> => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await addCustomer(accToken, values);
+      const data = await addCustomer(token, values);
 
       if (data.responseCode === "20000") {
         await fetchAllCustomer({
@@ -255,14 +271,16 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   // Edit Customer
-  const editDataCustomer = async (values: CustomerFormValues, code: string) => {
+  const editDataCustomer = async (
+    values: CustomerFormValues,
+    code: string
+  ): Promise<CustomerEditResponse> => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await editCustomer(accToken, code, values);
+      const data = await editCustomer(token, code, values);
 
       // refetch
       if (data.responseCode === "20000") {
@@ -286,11 +304,10 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get Details customer
   const getDetailsDataCustomer = async (code: string) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
-      const data = await getDetailsCustomer(accToken, code);
+      const data = await getDetailsCustomer(token, code);
 
       setDetailCustomer(data);
       return data;
@@ -302,12 +319,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get All Customer
   const fetchAllCustomer = async (params?: CustomerParams) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await getAllCustomer(accToken, params);
+      const data = await getAllCustomer(token, params);
 
       setCustomers(data?.items ?? []);
       return data;
@@ -319,11 +335,10 @@ export const AppContextProvider = ({ children }: Props) => {
   // Get Customer by Code
   const fetchCustomerByCode = async (code: string) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
-      const data = await getCustomer(accToken, code);
+      const data = await getCustomer(token, code);
 
       setCustomerByCode(data);
       return data;
@@ -337,12 +352,11 @@ export const AppContextProvider = ({ children }: Props) => {
     params?: Record<string, any>
   ): Promise<TransactionResponse | undefined> => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await getAllTransaction(accToken, params);
+      const data = await getAllTransaction(token, params);
 
       setTransactions(data?.items ?? []);
       setTotalTransactions(data?.total ?? 0);
@@ -354,12 +368,11 @@ export const AppContextProvider = ({ children }: Props) => {
 
   const getDetailsTransaction = async (no: string) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await detailsTransaction(accToken, no);
+      const data = await detailsTransaction(token, no);
 
       setDetailsTransactionData(data ?? null);
       return data;
@@ -371,12 +384,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // Daily Transaction
   const getDailyTransactions = async (params?: Record<string, any>) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await dailyTransactions(accToken, params);
+      const data = await dailyTransactions(token, params);
       setDailyTransactionsData(data ?? null);
 
       return data;
@@ -388,12 +400,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // Monthly Transaction
   const getMonthlyTransactions = async (params?: Record<string, any>) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await monthlyTransactions(accToken, params);
+      const data = await monthlyTransactions(token, params);
       setMonthlyTransactionsData(data ?? null);
 
       return data;
@@ -405,12 +416,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // yearly
   const getYearlyTransactions = async (params?: Record<string, any>) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await yearlyTransactions(accToken, params);
+      const data = await yearlyTransactions(token, params);
       setYearlyTransactionsData(data ?? null);
 
       return data;
@@ -422,12 +432,11 @@ export const AppContextProvider = ({ children }: Props) => {
   // top customer
   const getTopCustomer = async (params?: Record<string, any>) => {
     try {
-      const accToken = localStorage.getItem("accessToken");
-      if (!accToken) {
+      if (!token) {
         throw new Error("Token not found");
       }
 
-      const data = await topCustomer(accToken, params);
+      const data = await topCustomer(token, params);
       setTopCustomerData(data?.items ?? []);
 
       return data;
@@ -437,11 +446,8 @@ export const AppContextProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    const accToken = localStorage.getItem("accessToken");
-    if (accToken && !user) {
-      fetchUserData();
-    }
-  }, [user]);
+    fetchUserData();
+  }, []);
 
   // useEffect(() => {
   //   const accToken = localStorage.getItem("accessToken");
@@ -453,6 +459,9 @@ export const AppContextProvider = ({ children }: Props) => {
   const value = {
     navigate,
     user,
+    loadingUserData,
+    token,
+    fetchUserData,
     changePassword,
     signIn,
     signOut,

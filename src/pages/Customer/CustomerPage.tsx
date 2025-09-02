@@ -3,21 +3,25 @@ import PaginationBar from "@/components/PaginationBar";
 import { buttonVariants } from "@/components/ui/button";
 import { UseAppContext } from "@/context/UseAppContext";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 
 const CustomerPage = () => {
   const { customers, fetchAllCustomer } = UseAppContext();
 
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  // const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const location = useLocation();
 
+  const currentPage = Number(searchParams.get("page") ?? "1");
   const itemsPerPage = 10;
 
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const handlePagination = (page: number) => {
-    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    if (page >= 1 && page <= totalPages)
+      setSearchParams({ page: String(page) });
   };
 
   useEffect(() => {
@@ -43,7 +47,13 @@ const CustomerPage = () => {
     <>
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Customer</h1>
-        <Link to="/customer/add-customer" className={buttonVariants()}>
+        <Link
+          to={`/customer/add-customer?redirect=${encodeURIComponent(
+            location.pathname + location.search
+          )}`}
+          state={{ from: location }}
+          className={buttonVariants()}
+        >
           Add Customer
         </Link>
       </div>

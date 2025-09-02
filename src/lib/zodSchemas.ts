@@ -22,17 +22,11 @@ export const CustomerSchema = z.object({
     .uppercase({ message: "Nama harus uppercase" }),
   identityNo: z.string().optional(),
   npwp: z.string().optional(),
-  email: z.string().optional(),
+  email: z.union([z.literal(""), z.email()]),
   phone: z.string().optional(),
   mobile_phone: z.string().optional(),
-  provinceCode: z
-    .string()
-    .min(2, { message: "Minimal 2 karakter" })
-    .max(8, { message: "Maksimal 8 karakter" }),
-  cityCode: z
-    .string()
-    .min(2, { message: "Minimal 2 karakter" })
-    .max(8, { message: "Maksimal 8 karakter" }),
+  provinceCode: z.string().min(1, { message: "Pilih salah satu" }),
+  cityCode: z.string().min(1, { message: "Pilih salah satu" }),
   address: z
     .string()
     .min(3, { message: "Minimal 3 karakter" })

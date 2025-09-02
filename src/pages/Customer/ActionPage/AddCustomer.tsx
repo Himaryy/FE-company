@@ -10,8 +10,9 @@ import {
 import { UseAppContext } from "@/context/UseAppContext";
 import type { CustomerFormValues } from "@/lib/zodSchemas";
 import { ArrowLeft } from "lucide-react";
-import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { toast } from "sonner";
 
 const AddCustomer = () => {
   const {
@@ -23,21 +24,30 @@ const AddCustomer = () => {
     navigate,
   } = UseAppContext();
 
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get("redirect") || "/customer";
+
   async function onSubmit(values: CustomerFormValues) {
-    const payload = {
-      ...values,
-      // identityNo: values.identityNo ?? "",
-      // npwp: values.npwp ?? "",
-      // email: values.email ?? "",
-      // phone: values.phone ?? "",
-      // mobile_phone: values.mobile_phone ?? "",
-    };
+    setIsLoading(true);
 
     try {
-      await addDataCustomer(payload);
-      navigate("/customer");
-    } catch (error) {
-      console.error("Error kirim data", error);
+      const res = await addDataCustomer(values);
+      if (res.responseCode === "20000") {
+        navigate("/customer");
+        toast.success("Berhasil menambah data customer", {
+          richColors: true,
+          position: "top-right",
+        });
+      }
+    } catch {
+      toast.error("Gagal menambah data customer", {
+        richColors: true,
+        position: "top-right",
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -57,7 +67,7 @@ const AddCustomer = () => {
     <>
       <div className="flex items-center gap-4">
         <Link
-          to="/customer"
+          to={redirect}
           className={buttonVariants({
             variant: "outline",
             size: "icon",
@@ -79,6 +89,7 @@ const AddCustomer = () => {
         <CardContent>
           {/* Customer Form Component */}
           <CustomerForm
+            isLoadingPostData={isLoading}
             onSubmit={onSubmit}
             provinceList={provinceList}
             cityList={cityList}

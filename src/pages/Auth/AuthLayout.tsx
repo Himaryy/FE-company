@@ -5,13 +5,26 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import React from "react";
+import { UseAppContext } from "@/context/UseAppContext";
+import React, { useEffect } from "react";
 
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const AuthLayout = () => {
+  const { user, navigate } = UseAppContext();
+
   const { pathname } = useLocation();
   const isSignIn = pathname.includes("sign-in");
+
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      if (user) {
+        navigate("/");
+      }
+      // Optional: jika user belum ada, bisa fetch data user dulu
+    }
+  }, [user, navigate]);
 
   return (
     <div className="relative flex min-h-svh flex-col items-center justify-center">

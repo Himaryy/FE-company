@@ -9,7 +9,6 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { UseAppContext } from "@/context/UseAppContext";
 import { useEffect, useState } from "react";
-import { Loader2 } from "lucide-react";
 
 const CustomerDetail = () => {
   const { detailCustomer } = UseAppContext();
@@ -32,9 +31,9 @@ const CustomerDetail = () => {
         </DrawerHeader>
         <Separator />
         {isLoading ? (
-          <div className="flex items-center justify-center h-[60vh] gap-2">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            <span className="text-xl text-muted-foreground">Loading...</span>
+          <div className="flex items-center justify-center h-[60vh] gap-4">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary"></div>
+            Loading ...
           </div>
         ) : (
           <div className="flex flex-col gap-4 overflow-y-auto px-4 text-sm my-4">

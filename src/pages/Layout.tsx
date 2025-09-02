@@ -5,12 +5,6 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 
 const Layout = () => {
-  // const { user } = UseAppContext();
-  // const navigate = useNavigate();
-
-  // if (!user?.accessToken) {
-  //   navigate("/sign-in");
-  // }
   return (
     <SidebarProvider
       style={
